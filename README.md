@@ -67,10 +67,10 @@ All the resources created in AWS will use a prefix to avoid name collisions. The
 The file `config/template-config.yml` contains a template for the configuration file. Copy this file to `config/config.yml` and configure it as required. Currently, this file follows the next structure:
 
 ```yaml
-terraform-version: 0.9.6
+terraform-version: 0.9.8
 aws:
-  - profile: A_PROFILE
-  - region: A_REGION
+  profile: A_PROFILE
+  region: A_REGION
 ```
 
 # Adding a New Module

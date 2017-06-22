@@ -1,5 +1,5 @@
-terraform-version: 0.9.6
+terraform-version: 0.9.8
 # Uncomment and fill in the next lines to configure AWS credentials.
 #aws:
-#  - profile: A_PROFILE
-#  - region: A_REGION
+#  profile: A_PROFILE
+#  region: A_REGION
