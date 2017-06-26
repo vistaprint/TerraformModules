@@ -33,5 +33,6 @@ List of additional stages. Each stage supports the following arguments:
   - cache_cluster_size: the size of the cache cluster. See AWS or Terraform documentation for the allowed values.
   - cache_ttl_in_seconds: time to live (TTL), in seconds, for cached responses.
   - metrics_enabled: specifies whether CloudWatch metrics are enabled.
+  - logging_level: specifies the logging level for this method. The available levels are OFF, ERROR, and INFO.
 EOF
 }
