@@ -67,6 +67,37 @@ EOF
   }
 }
 
+
+### Test for cache key parameters ###
+
+module "param" {
+  source = "../../modules/api_path/path2"
+  api    = "${aws_api_gateway_rest_api.api.id}"
+  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  path   = ["caching", "{param}"]
+}
+
+module "caching_method" {
+  source = "../../modules/api_method"
+  api    = "${aws_api_gateway_rest_api.api.id}"
+  parent = "${element(module.param.path_resource_id, 1)}"
+  request = {
+    type = "MOCK"
+    content_type = "application/json"
+    template = <<EOF
+{"statusCode": 200}
+EOF
+  }
+  cache_key_parameters = ["param"]
+  responses = {
+    "200" = {
+      content_type = "text/plain"
+      selection_pattern = ""
+      template = "OK"
+    }
+  }
+}
+
 ### Deployment ###
 
 resource "aws_api_gateway_deployment" "deployment" {

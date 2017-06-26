@@ -29,6 +29,12 @@ variable "headers" {
   default = {}
 }
 
+variable "cache_key_parameters" {
+  description = "List containing the cache key parameters"
+  type = "list"
+  default = []
+}
+
 variable "responses" {
   description = <<EOF
 Response information represented as a map where the keys are the status code

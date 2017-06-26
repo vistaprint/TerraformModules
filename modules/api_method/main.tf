@@ -7,9 +7,16 @@ resource "aws_api_gateway_method" "method" {
   resource_id   = "${var.parent}"
   http_method   = "GET"
   authorization = "NONE"
-  request_parameters = "${zipmap(
-    formatlist("method.request.querystring.%s", keys(var.querystrings)),
-    values(var.querystrings))}" 
+  request_parameters = "${merge(
+    zipmap(
+      formatlist("method.request.querystring.%s", keys(var.querystrings)),
+      values(var.querystrings)
+    ),
+    zipmap(
+      formatlist("method.request.path.%s", var.cache_key_parameters),
+      module.cache_key_parameters_values.list
+    )
+  )}"
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -19,6 +26,10 @@ resource "aws_api_gateway_integration" "integration" {
   type        = "${var.request["type"]}"
   uri         = "${var.request["type"] == "AWS" ? lookup(var.request, "uri", "") : ""}"
   integration_http_method = "POST"
+  request_parameters = "${zipmap(
+    formatlist("integration.request.path.%s", var.cache_key_parameters),
+    formatlist("method.request.path.%s", var.cache_key_parameters)
+  )}"
   request_templates = 
     "${map(
       lookup(var.request, "content_type", var.default_content_type),
@@ -36,7 +47,7 @@ resource "aws_api_gateway_method_response" "responses" {
     map("method.response.header.Content-Type", true),
     zipmap(
       formatlist("method.response.header.%s", keys(var.headers)),
-      module.list_of_true_values.list)
+      module.response_headers_values.list)
     )}"
 }
 
@@ -62,9 +73,15 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
     )}"
 }
 
-module "list_of_true_values" {
+module "response_headers_values" {
   source = "../n_list"
   count = "${length(var.headers)}"
+  value = "true"
+}
+
+module "cache_key_parameters_values" {
+  source = "../n_list"
+  count = "${length(var.cache_key_parameters)}"
   value = "true"
 }
 
