@@ -56,8 +56,9 @@ resource "aws_api_gateway_method_response" "responses" {
     map("method.response.header.Content-Type", true),
     zipmap(
       formatlist("method.response.header.%s", keys(var.headers)),
-      module.response_headers_values.list)
-    )}"
+      module.response_headers_values.list
+    )
+  )}"
 }
 
 resource "aws_api_gateway_integration_response" "integration_responses" {
@@ -85,8 +86,9 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
     ),
     zipmap(
       formatlist("method.response.header.%s", keys(var.headers)),
-      formatlist("'%s'", values(var.headers)))
-    )}"
+      formatlist("'%s'", values(var.headers))
+    )
+  )}"
 }
 
 module "response_headers_values" {
