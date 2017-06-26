@@ -7,14 +7,17 @@ resource "aws_api_gateway_method" "method" {
   resource_id   = "${var.parent}"
   http_method   = "GET"
   authorization = "NONE"
+  # The merging order matters as a query string that is also a cache key
+  # parameter should not have its value unconditionally set to true,
+  # but to the value provided by the user.
   request_parameters = "${merge(
+    zipmap(
+      formatlist("method.request.%s", var.cache_key_parameters),
+      module.cache_key_parameters_values.list
+    ),
     zipmap(
       formatlist("method.request.querystring.%s", keys(var.querystrings)),
       values(var.querystrings)
-    ),
-    zipmap(
-      formatlist("method.request.path.%s", var.cache_key_parameters),
-      module.cache_key_parameters_values.list
     )
   )}"
 }
@@ -26,9 +29,15 @@ resource "aws_api_gateway_integration" "integration" {
   type        = "${var.request["type"]}"
   uri         = "${var.request["type"] == "AWS" ? lookup(var.request, "uri", "") : ""}"
   integration_http_method = "POST"
-  request_parameters = "${zipmap(
-    formatlist("integration.request.path.%s", var.cache_key_parameters),
-    formatlist("method.request.path.%s", var.cache_key_parameters)
+  request_parameters = "${merge(
+    zipmap(
+      formatlist("integration.request.%s", var.cache_key_parameters),
+      formatlist("method.request.%s", var.cache_key_parameters)
+    ),
+    zipmap(
+      formatlist("integration.request.querystring.%s", keys(var.querystrings)),
+      formatlist("method.request.querystring.%s", keys(var.querystrings))
+    )
   )}"
   request_templates = 
     "${map(
@@ -66,7 +75,14 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
   )}"
 
   response_parameters = "${merge(
-    map("method.response.header.Content-Type", "'${lookup(var.responses[element(keys(var.responses), count.index)], "content_type", var.default_content_type)}'"),
+    map(
+      "method.response.header.Content-Type",
+      "'${lookup(
+        var.responses[element(keys(var.responses), count.index)],
+        "content_type",
+        var.default_content_type
+      )}'"
+    ),
     zipmap(
       formatlist("method.response.header.%s", keys(var.headers)),
       formatlist("'%s'", values(var.headers)))

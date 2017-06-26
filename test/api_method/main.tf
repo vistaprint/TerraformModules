@@ -15,15 +15,15 @@ module "method" {
   source = "../../modules/api_method"
   api    = "${aws_api_gateway_rest_api.api.id}"
   parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
-  querystrings = {
-    q = true
-  }
   request = {
     type = "MOCK"
     content_type = "application/json"
     template = <<EOF
 {"statusCode": #if($input.params('q')=="existing")200#{else}404#end}
 EOF
+  }
+  querystrings = {
+    q = true
   }
   responses = {
     "200" = {
@@ -67,7 +67,6 @@ EOF
   }
 }
 
-
 ### Test for cache key parameters ###
 
 module "param" {
@@ -85,15 +84,24 @@ module "caching_method" {
     type = "MOCK"
     content_type = "application/json"
     template = <<EOF
-{"statusCode": 200}
+{"statusCode": #if($input.params('q')=="existing")200#{else}404#end}
 EOF
   }
-  cache_key_parameters = ["param"]
+  querystrings = {
+    q = true
+    p = true
+  }
+  cache_key_parameters = ["path.param", "querystring.q"]
   responses = {
     "200" = {
       content_type = "text/plain"
       selection_pattern = ""
-      template = "OK"
+      template = "Found"
+    }
+    "404" = {
+      content_type = "text/plain"
+      selection_pattern = "404"
+      template = "Not found"
     }
   }
 }
