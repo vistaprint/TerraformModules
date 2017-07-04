@@ -29,3 +29,11 @@ variable "timeout" {
   description = "The timeout the function should have. Defaults to 300."
   default = 300
 }
+
+variable "statement_id" {
+  description = "A unique statement identifier"
+}
+
+variable "principal" {
+  description = "The principal who is getting this permission. e.g. s3.amazonaws.com"
+}

@@ -81,6 +81,8 @@ module "lambdas" {
     LambdaModuleTest2 = "package.say_goodbye"
   }
   source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/*/*"
+  statement_id = "AllowExecutionFromAPIGateway"
+  principal = "apigateway.amazonaws.com"
   prefix = "${var.prefix}"
   runtime = "python3.6"
 }

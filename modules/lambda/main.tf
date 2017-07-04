@@ -28,10 +28,10 @@ resource "aws_iam_role_policy" "policy_for_lambda" {
 resource "aws_lambda_permission" "lambda_permission" {
   count = "${length(var.function_names_and_handlers)}"
   
-  statement_id  = "AllowExecutionFromAPIGateway"
+  statement_id  = "${var.statement_id}"
   action        = "lambda:InvokeFunction"
   function_name = "${element(aws_lambda_function.lambda_function.*.arn, count.index)}"
-  principal     = "apigateway.amazonaws.com"
+  principal     = "${var.principal}"
   source_arn    = "${var.source_arn}"
 }
 
