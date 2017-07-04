@@ -29,6 +29,7 @@ resource "aws_api_gateway_integration" "integration" {
   type        = "${var.request["type"]}"
   uri         = "${var.request["type"] == "AWS" ? lookup(var.request, "uri", "") : ""}"
   integration_http_method = "POST"
+  cache_key_parameters = ["${formatlist("method.request.%s", var.cache_key_parameters)}"]
   request_templates = 
     "${map(
       lookup(var.request, "content_type", var.default_content_type),
