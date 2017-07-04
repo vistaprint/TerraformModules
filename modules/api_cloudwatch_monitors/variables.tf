@@ -24,7 +24,7 @@ The following arguments are supported:
   - period: The period in seconds over which the specified statistic is applied.
   - statistic: The statistic to apply to the alarm's associated metric.
   - threshold: The number of occurances over a given period.
-  - alarm_actions: The actions to execute when the alarm transitions into an ALARM state.
+  - actions: The actions to execute when the alarm transitions into an ALARM state.
       Due to a limitation in Terraform, this list must be given as a comma-separated string.
 EOF
 }

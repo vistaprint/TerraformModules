@@ -60,9 +60,9 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
   # For some reason Terraform aborted its execution when the result
   # of split() was an empty list (i.e., when no actions are given).
   # By using compact() the abort magically goes away.
-  alarm_actions = "${compact(split(",", lookup(
+  alarm_actions = ["${compact(split(",", lookup(
                     var.alarms[element(keys(var.alarms), count.index)],
                     "actions",
                     ""
-                    )))}"
+                    )))}"]
 }
