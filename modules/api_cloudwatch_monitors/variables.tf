@@ -28,3 +28,8 @@ The following arguments are supported:
       Due to a limitation in Terraform, this list must be given as a comma-separated string.
 EOF
 }
+
+# TODO: remove once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
+variable "alarm_count" {
+  default = 0
+}
