@@ -109,7 +109,7 @@ EOF
 ### Deployment ###
 
 resource "aws_api_gateway_deployment" "deployment" {
-  depends_on = ["module.method", "module.redirect_method"]
+  depends_on = ["module.method", "module.redirect_method", "module.caching_method"]
   rest_api_id = "${aws_api_gateway_rest_api.api.id}"
   stage_name  = "Test"
 
@@ -119,6 +119,10 @@ resource "aws_api_gateway_deployment" "deployment" {
 
   provisioner "local-exec" {
     command = "ruby ../../build/wait_for_url.rb ${aws_api_gateway_deployment.deployment.invoke_url}/redirect"
+  }
+
+  provisioner "local-exec" {
+    command = "ruby ../../build/wait_for_url.rb ${aws_api_gateway_deployment.deployment.invoke_url}/caching/foo"
   }
 }
 
