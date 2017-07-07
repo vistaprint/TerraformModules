@@ -2,6 +2,12 @@ variable "default_content_type" {
   default = "application/json"
 }
 
+resource "aws_api_gateway_request_validator" "validator" {
+  rest_api_id = "${var.api}"
+  name        = "${var.api}-${var.parent}-GET-req-validator"
+  validate_request_parameters = true
+}
+
 resource "aws_api_gateway_method" "method" {
   rest_api_id   = "${var.api}"
   resource_id   = "${var.parent}"
@@ -20,6 +26,7 @@ resource "aws_api_gateway_method" "method" {
       values(var.querystrings)
     )
   )}"
+  request_validator_id = "${aws_api_gateway_request_validator.validator.id}"
 }
 
 resource "aws_api_gateway_integration" "integration" {
