@@ -39,7 +39,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Test"
 
   provisioner "local-exec" {
-    command = "ruby ../../build/wait_for_url.rb ${aws_api_gateway_deployment.deployment.invoke_url}"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}"
   }
 }
 

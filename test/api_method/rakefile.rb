@@ -1,10 +1,8 @@
 require 'open-uri'
 require 'openssl'
 
-require_relative '../../build/command'
-
 namespace 'api_method' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 
   module ApiMethodTest
     def self.fetch(api_url, q)
@@ -36,7 +34,7 @@ namespace 'api_method' do
   end
 
   task :validate, [:prefix] do
-    api_url = Command.run('terraform output api_url').tr("\r\n", '')
+    api_url = TDK::Command.run('terraform output api_url')[0]
 
     result = ApiMethodTest.fetch(api_url, 'existing')
     raise "Error while querying the API (got: #{result})" if result != 'Found'

@@ -3,14 +3,12 @@ require 'openssl'
 require 'time'
 require 'zip'
 
-require_relative '../../build/command'
-
 Zip.setup do |c|
   c.continue_on_exists_proc = true
 end
 
 namespace 'api_deployment' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 
   module ApiDeploymentTest
     def self.fetch(url)
@@ -27,7 +25,7 @@ namespace 'api_deployment' do
 
   # TODO: test that caching is enabled
   task :validate, [:prefix] do
-    api_url = Command.run('terraform output api_url').tr("\r\n", '')
+    api_url = TDK::Command.run('terraform output api_url')[0]
 
     result = ApiDeploymentTest.fetch(api_url)
 

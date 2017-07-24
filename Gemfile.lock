@@ -1,25 +1,28 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-sdk (2.9.21)
-      aws-sdk-resources (= 2.9.21)
-    aws-sdk-core (2.9.21)
+    TerraformDevKit (0.1.6)
+      aws-sdk (~> 2.9.37)
+      rubyzip (~> 1.2.1)
+    aws-sdk (2.9.44)
+      aws-sdk-resources (= 2.9.44)
+    aws-sdk-core (2.9.44)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.21)
-      aws-sdk-core (= 2.9.21)
-    aws-sigv4 (1.0.0)
+    aws-sdk-resources (2.9.44)
+      aws-sdk-core (= 2.9.44)
+    aws-sigv4 (1.0.1)
     jmespath (1.3.1)
     rake (12.0.0)
     rubyzip (1.2.1)
 
 PLATFORMS
-  x86-mingw32
+  x64-mingw32
 
 DEPENDENCIES
-  aws-sdk!
+  TerraformDevKit (~> 0.1.6)!
   rake!
   rubyzip!
 
 BUNDLED WITH
-   1.14.6
+   1.15.1

@@ -1,14 +1,18 @@
 require 'socket'
 require 'yaml'
 
-require_relative 'build/backup_state'
-require_relative 'build/config'
-require_relative 'build/terraform_installer'
-require_relative 'build/os'
+require 'TerraformDevKit'
 
-ROOT_PATH = File.dirname(__FILE__)
+TDK = TerraformDevKit
+
+ROOT_PATH = File.dirname(File.expand_path(__FILE__))
+BIN_PATH = File.join(ROOT_PATH, 'bin')
+
 # Ensure terraform is in the PATH
-ENV['PATH'] = OS.join_env_path(ROOT_PATH, ENV['PATH'])
+ENV['PATH'] = TDK::OS.join_env_path(
+  TDK::OS.convert_to_local_path(BIN_PATH),
+  ENV['PATH']
+)
 
 HOSTNAME = Socket.gethostname
 DATE = Time.new.strftime('%y%m%d%H%M%S')
@@ -16,7 +20,7 @@ DEFAULT_PREFIX = "#{HOSTNAME}_#{DATE}_".freeze
 
 MODULES_TO_TEST = Rake::FileList.new('test/*')
 
-Configuration.init('config/config.yml')
+TDK::Configuration.init('config/config.yml')
 
 task default: [:preflight]
 
@@ -29,13 +33,16 @@ def run_task_on_single_module(module_path, task_name)
   rescue RuntimeError => e
     puts e.message
     puts e.backtrace.join("\n")
-    BackupState.backup(DEFAULT_PREFIX)
+    TDK::BackupState.backup(DEFAULT_PREFIX)
     raise "Error testing module (#{module_path})"
   end
 end
 
 def run_task(task_name)
-  TerraformInstaller.install_local(Configuration.get('terraform-version'))
+  TDK::TerraformInstaller.install_local(
+    TDK::Configuration.get('terraform-version'),
+    directory: BIN_PATH
+  )
   MODULES_TO_TEST.each do |module_path|
     Dir.chdir(module_path) do
       run_task_on_single_module(module_path, task_name)
