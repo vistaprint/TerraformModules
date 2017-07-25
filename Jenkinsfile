@@ -52,7 +52,7 @@ pipeline {
                 sh """
                     curl -f --user $GH_USER:$GH_PASSWORD -H "Content-Type: application/json" \
                         -X POST -d '{"state": "$RESULT"}' \
-                        https://api.github.com/repos/betabandido/JenkinsIntegrationTest/statuses/$GIT_COMMIT
+                        https://api.github.com/repos/betabandido/TerraformModules/statuses/$GIT_COMMIT
                 """
             }
             deleteDir()
