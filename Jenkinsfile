@@ -1,6 +1,8 @@
 pipeline {
     agent {
-        label 'DockerLinux'
+        dockerfile {
+            label 'DockerLinux'
+        }
     }
     stages {
         stage('Setup') {
@@ -13,11 +15,6 @@ pipeline {
             }
         }
         stage('Test') {
-            agent {
-                dockerfile {
-                    reuseNode true
-                }
-            }
             environment {
                 AWS_REGION = 'eu-west-1'
             }
