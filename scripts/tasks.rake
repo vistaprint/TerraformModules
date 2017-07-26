@@ -1,4 +1,7 @@
 require 'fileutils'
+require 'TerraformDevKit'
+
+TDK = TerraformDevKit unless defined? TDK
 
 def add_aws_variables(cmd)
   aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
@@ -10,7 +13,7 @@ def add_aws_variables(cmd)
 end
 
 task :init do
-  TDK::Command.run('terraform get')
+  TDK::Command.run('terraform init')
 end
 
 desc 'Creates the infrastructure'

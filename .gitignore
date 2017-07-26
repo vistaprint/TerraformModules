@@ -39,3 +39,4 @@ tags
 *.zip
 *.exe
 config/config.yml
+bin

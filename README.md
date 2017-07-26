@@ -82,11 +82,13 @@ All the resources created in AWS will use a prefix to avoid name collisions. The
 The file `config/template-config.yml` contains a template for the configuration file. Copy this file to `config/config.yml` and configure it as required. Currently, this file follows the next structure:
 
 ```yaml
-terraform-version: 0.9.8
+terraform-version: 0.10.0-rc1
 aws:
   profile: A_PROFILE
   region: A_REGION
 ```
+
+**NOTE**: Testing some of the modules requires Terraform 0.10.0, as it contains merged pull requests for supporting [cache key parameters](https://github.com/terraform-providers/terraform-provider-aws/pull/893) and [method request validators](https://github.com/terraform-providers/terraform-provider-aws/pull/1064). At this moment version 0.10.0 has not been released yet, but it is possible to use the release candidate 1 (as the previous configuration template shows).
 
 # Adding a New Module
 

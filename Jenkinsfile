@@ -8,10 +8,7 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'bundle install'
-                sh 'echo terraform-version: 0.9.101 > config/config.yml'
-                sh 'wget -P bin https://s3-eu-west-1.amazonaws.com/mpus-integration/terraform/terraform'
-                sh 'chmod +x ./bin/terraform'
-                sh './bin/terraform --version'
+                sh 'echo "terraform-version: 0.10.0-rc1" > config/config.yml'
             }
         }
         stage('Test') {
