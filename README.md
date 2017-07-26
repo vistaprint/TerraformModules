@@ -1,15 +1,30 @@
 This repository contains generic [Terraform](https://www.terraform.io) modules. Using modules instead of ad-hoc configurations provides multiple benefits such as simplified configuration files, better testability and increased productivity overall.
 
+All the modules are tested by using an included testing framework that creates a test infrastructure on AWS, conducts some tests, and then destroys the infrastructure. See [Testing](#testing) and [Adding a New Module](#adding-a-new-module) for more information on the testing infrastructure and how to add a new module that is picked up by the testing framework.
+
 The current available modules are:
 
 * [API method](modules/api_method/README.md)
 * [API variable-depth path](modules/api_path/README.md)
 * [API deployment](modules/api_deployment/README.md)
+* [API CORS](modules/api_cors/README.md)
 * [Cloudwatch monitors for API gateway](modules/api_cloudwatch_monitors/README.md)
 * [DynamoDB table](modules/dynamodb_table/README.md)
 * [Lambdas](modules/lambda/README.md)
 
 See [Terraform documentation](https://www.terraform.io/docs/modules/usage.html) for more information on how to use modules.
+
+# Dependencies
+
+The testing framework depends on a Ruby gem ([TerraformDevKit](https://rubygems.org/gems/TerraformDevKit)) that contains scripts and a library to ease developing projects that use Terraform.
+
+To install this gem run:
+
+```bash
+bundle install
+```
+
+This command may also install other required gems and [rake](https://github.com/ruby/rake) if they are not already in the system.
 
 # Usage
 
@@ -67,11 +82,13 @@ All the resources created in AWS will use a prefix to avoid name collisions. The
 The file `config/template-config.yml` contains a template for the configuration file. Copy this file to `config/config.yml` and configure it as required. Currently, this file follows the next structure:
 
 ```yaml
-terraform-version: 0.9.8
+terraform-version: 0.10.0-rc1
 aws:
   profile: A_PROFILE
   region: A_REGION
 ```
+
+**NOTE**: Testing some of the modules requires Terraform 0.10.0, as it contains merged pull requests for supporting [cache key parameters](https://github.com/terraform-providers/terraform-provider-aws/pull/893) and [method request validators](https://github.com/terraform-providers/terraform-provider-aws/pull/1064). At this moment version 0.10.0 has not been released yet, but it is possible to use the release candidate 1 (as the previous configuration template shows).
 
 # Adding a New Module
 
@@ -100,7 +117,7 @@ A minimal rake file to create and destroy the infrastructure looks like:
 
 ```ruby
 namespace 'module_name' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 end
 ```
 
@@ -116,7 +133,7 @@ The following example shows the usage of both tasks:
 
 ```ruby
 namespace 'module_name' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 
   module ModuleNameTest
     def self.fetch(api_url, cmd, name)
@@ -133,7 +150,7 @@ namespace 'module_name' do
   end
 
   task :validate, [:prefix] do |t, args|
-    api_url = Command.run('terraform output api_url').tr("\r\n", "")
+    api_url = TDK::Command.run('terraform output api_url')[0]
 
     if ModuleNameTest.fetch(api_url, 'hello', 'Steve').body != 'Hello Steve'
       raise 'Error while querying the API'

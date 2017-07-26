@@ -40,6 +40,8 @@ module "lambdas" {
   lambda_file = "lambda.zip"
   function_names_and_handlers = { ApiDeploymentTestLambda = "lambda.handler" }
   source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/"
+  statement_id = "AllowExecutionFromAPIGateway"
+  principal = "apigateway.amazonaws.com"
   prefix = "${var.prefix}"
   runtime = "python3.6"
 }
@@ -68,11 +70,11 @@ resource "null_resource" "wait_for_deployment" {
   depends_on = ["module.deployment"]
 
   provisioner "local-exec" {
-    command = "ruby ../../build/wait_for_url.rb ${module.deployment.api_url}"
+    command = "wait_for_url ${module.deployment.api_url}"
   }
 
   provisioner "local-exec" {
-    command = "ruby ../../build/wait_for_url.rb ${replace(module.deployment.api_url, "/Default", "/Cached")}"
+    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")}"
   }
 }
 

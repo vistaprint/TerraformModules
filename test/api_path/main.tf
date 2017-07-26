@@ -48,6 +48,8 @@ module "lambda" {
   lambda_file = "sample_lambda.zip"
   function_names_and_handlers = {LambdaModuleTest1 = "hello.say_hello"}
   source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/*/*"
+  statement_id = "AllowExecutionFromAPIGateway"
+  principal = "apigateway.amazonaws.com"
   prefix = "${var.prefix}"
   runtime = "python3.6"
 }
@@ -61,7 +63,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Prod"
 
   provisioner "local-exec" {
-    command = "ruby ../../build/wait_for_url.rb ${aws_api_gateway_deployment.deployment.invoke_url}/hello/foo"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/hello/foo"
   }
 }
 

@@ -1,11 +1,10 @@
 require 'fileutils'
+require 'TerraformDevKit'
 
-require_relative 'aws'
-require_relative 'command'
-require_relative 'config'
+TDK = TerraformDevKit unless defined? TDK
 
 def add_aws_variables(cmd)
-  aws_config = AwsConfig.new(Configuration.get('aws'))
+  aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
   profile = aws_config.profile
   region = aws_config.region
   cmd += " -var profile=#{profile}" unless profile.nil?
@@ -14,7 +13,7 @@ def add_aws_variables(cmd)
 end
 
 task :init do
-  Command.run('terraform get')
+  TDK::Command.run('terraform init')
 end
 
 desc 'Creates the infrastructure'
@@ -24,7 +23,7 @@ task :apply, [:prefix] => :init do |t, args|
   Rake::Task[prepare_task].invoke(args.prefix) if Rake::Task.task_defined?(prepare_task)
 
   cmd = "terraform apply -var prefix=#{args.prefix}"
-  Command.run(add_aws_variables(cmd))
+  TDK::Command.run(add_aws_variables(cmd))
 end
 
 desc 'Runs preflight'
@@ -44,7 +43,7 @@ end
 desc 'Destroys the infrastructure'
 task :destroy, [:prefix] => :init do |t, args|
   cmd = "terraform destroy -force -var prefix=#{args.prefix}"
-  Command.run(add_aws_variables(cmd))
+  TDK::Command.run(add_aws_variables(cmd))
 end
 
 desc 'Cleans up the test folder (after destroying the infrastructure)'

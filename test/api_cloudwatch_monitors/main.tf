@@ -39,7 +39,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Test"
 
   provisioner "local-exec" {
-    command = "ruby ../../build/wait_for_url.rb ${aws_api_gateway_deployment.deployment.invoke_url}"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}"
   }
 }
 
@@ -53,6 +53,8 @@ module "sample_monitors" {
   source     = "../../modules/api_cloudwatch_monitors"
   api_name   = "${aws_api_gateway_rest_api.api.name}"
   stage_name = "Test"
+  # TODO: remove once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
+  alarm_count = 4
   alarms = {
     "4XXError" = {
       threshold = 100

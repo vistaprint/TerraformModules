@@ -2,14 +2,12 @@ require 'open-uri'
 require 'openssl'
 require 'zip'
 
-require_relative '../../build/command'
-
 Zip.setup do |c|
   c.continue_on_exists_proc = true
 end
 
 namespace 'api_path' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 
   module ApiPathTest
     def self.fetch(api_url, name)
@@ -26,7 +24,7 @@ namespace 'api_path' do
   end
 
   task :validate, [:prefix] do
-    api_url = Command.run('terraform output api_url').tr("\r\n", '')
+    api_url = TDK::Command.run('terraform output api_url')[0]
     if ApiPathTest.fetch(api_url, 'Steve') != 'Hello Steve'
       raise 'Error while querying the API'
     end

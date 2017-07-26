@@ -1,9 +1,5 @@
-require_relative '../../build/aws'
-require_relative '../../build/config'
-require_relative '../../build/dynamodb'
-
 namespace 'dynamodb_table' do
-  load '../../build/tasks.rake'
+  load '../../scripts/tasks.rake'
 
   module DynamoDbTableTest
     def self.test_table(dynamo_db, table_name)
@@ -19,8 +15,8 @@ namespace 'dynamodb_table' do
   end
 
   task :validate, [:prefix] do |t, args|
-    aws_config = AwsConfig.new(Configuration.get('aws'))
-    dynamo_db = DynamoDB.new(
+    aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+    dynamo_db = TDK::DynamoDB.new(
       aws_config.credentials,
       aws_config.region
     )

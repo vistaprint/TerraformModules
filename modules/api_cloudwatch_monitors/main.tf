@@ -19,7 +19,9 @@ variable "default_statistic" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "alarm" {
-  count               = "${length(var.alarms)}"
+  # TODO: revert once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
+  #count               = "${length(var.alarms)}"
+  count               = "${var.alarm_count}"
   alarm_name          = "${format("%s-%s-%s",
                           var.api_name,
                           var.stage_name,

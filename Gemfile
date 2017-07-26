@@ -1,5 +1,5 @@
 source 'https://rubygems.org' do
-  gem 'aws-sdk'
   gem 'rake'
   gem 'rubyzip'
+  gem 'TerraformDevKit', '~> 0.1.6'
 end
