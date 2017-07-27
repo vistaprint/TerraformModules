@@ -2,9 +2,13 @@ variable "lambda_file" {
   description = "The lambda zip file to upload to the functions."
 }
 
-variable "function_names_and_handlers" {
+variable "functions" {
+  description = <<EOF
+A map with the configuration for each function. The keys must contain the
+function names, and the values are maps with the following valid fields:
+  - handler: the handler the function will invoke
+EOF
   type = "map"
-  description = "A map of function names to the handler each function will invoke."
 }
 
 variable "source_arn" {
@@ -31,9 +35,15 @@ variable "timeout" {
 }
 
 variable "statement_id" {
-  description = "A unique statement identifier"
+  description = "A unique statement identifier."
 }
 
 variable "principal" {
-  description = "The principal who is getting this permission. e.g. s3.amazonaws.com"
+  description = "The principal who is getting this permission (e.g., s3.amazonaws.com)."
+}
+
+variable "variables" {
+  description = "A map that defines environment variables for the lambda function."
+  type = "map"
+  default = { dummy_ = "1" }
 }
