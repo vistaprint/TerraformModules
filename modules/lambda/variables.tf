@@ -41,4 +41,5 @@ variable "principal" {
 variable "tags" {
   description = "Tags to apply to each lambda"
   type = "map"
+  default = {}
 }
