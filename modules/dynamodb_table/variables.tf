@@ -7,3 +7,8 @@ A list of maps containing the information for each table. The following fields c
 EOF
   type = "list"
 }
+
+variable "tags"  {
+  description = "Tags to add to the dynamodb tables."
+  type = "map"
+}
