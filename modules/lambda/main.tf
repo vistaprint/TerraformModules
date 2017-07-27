@@ -45,4 +45,5 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = "${base64sha256(file("${var.lambda_file}"))}"
   runtime          = "${var.runtime}"
   timeout		       = "${var.timeout}"
+  tags             = "${var.tags}" 
 }
