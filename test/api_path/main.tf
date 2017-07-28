@@ -35,7 +35,7 @@ EOF
   responses = {
     "200" = {
       selection_pattern = ""
-      template = "#set($inputRoot = $input.path('$'))$inputRoot.Result"
+      template = "$input.path('$.Result')"
       content_type = "text/plain"
     }
   }
@@ -44,14 +44,14 @@ EOF
 ### Lambda ###
 
 module "lambda" {
-  source = "../../modules/lambda"
-  lambda_file = "sample_lambda.zip"
-  function_names_and_handlers = {LambdaModuleTest1 = "hello.say_hello"}
-  source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/*/*"
+  source       = "../../modules/lambda"
+  lambda_file  = "sample_lambda.zip"
+  functions    = {LambdaModuleTest1 = { handler = "hello.say_hello" }}
+  source_arn   = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/*/*"
   statement_id = "AllowExecutionFromAPIGateway"
-  principal = "apigateway.amazonaws.com"
-  prefix = "${var.prefix}"
-  runtime = "python3.6"
+  principal    = "apigateway.amazonaws.com"
+  prefix       = "${var.prefix}"
+  runtime      = "python3.6"
 }
 
 ### Deployment ###

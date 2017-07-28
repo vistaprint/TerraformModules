@@ -30,7 +30,11 @@ namespace 'lambda' do
       raise 'Error while querying the API'
     end
 
-    if LambdaTest.fetch(api_url, 'goodbye', 'Steve') != 'Goodbye Steve'
+    if LambdaTest.fetch(api_url, 'printvar', 'foo') != 'FOO'
+      raise 'Error while querying the API'
+    end
+
+    if LambdaTest.fetch(api_url, 'printvar', 'bar') != 'BAR'
       raise 'Error while querying the API'
     end
   end
