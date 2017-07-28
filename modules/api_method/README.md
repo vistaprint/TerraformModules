@@ -4,7 +4,7 @@ See the `variables.tf` file in the module folder for more information on the mod
 
 # Example
 
-```
+```hcl
 resource "aws_api_gateway_rest_api" "api" {
  name = "${var.prefix}ApiMethod"
 }
