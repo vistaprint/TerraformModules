@@ -9,7 +9,7 @@ To effectively enable CORS for a given endpoint, in addition to creating an OPTI
 
 # Example
 
-```
+```hcl
 resource "aws_api_gateway_rest_api" "api" {
  name = "TestApiCors"
 }

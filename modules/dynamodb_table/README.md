@@ -2,7 +2,7 @@ This module creates a number of identical dynamodb tables given a list of table 
 
 # Example
 
-```
+```hcl
 module "tables" {
   source = "git::https://github.com/betabandido/terraformmodules.git//modules/dynamodb_table"
   table_info = [

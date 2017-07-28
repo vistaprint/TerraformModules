@@ -42,7 +42,7 @@ You can also target a specific branch or version tag by appending `?ref=` follow
 
 The following example uses the module `dynamodb_table` to create two DynamoDB tables (`Table1` and `Table2`). The first table uses default values for its capacity, while the second one uses the provided values.
 
-```
+```hcl
 module "aws_dynamodb_tables" {
   source = "git::https://github.com/betabandido/terraformmodules.git//modules/dynamodb_table"
   table_info = [
