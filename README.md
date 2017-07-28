@@ -150,7 +150,8 @@ namespace 'module_name' do
   end
 
   task :validate, [:prefix] do |t, args|
-    api_url = TDK::Command.run('terraform output api_url')[0]
+    api_url = TDK::TerraformLogFilter.filter(
+        TDK::Command.run('terraform output api_url'))[0]
 
     if ModuleNameTest.fetch(api_url, 'hello', 'Steve').body != 'Hello Steve'
       raise 'Error while querying the API'

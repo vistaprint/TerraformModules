@@ -34,7 +34,8 @@ namespace 'api_method' do
   end
 
   task :validate, [:prefix] do
-    api_url = TDK::Command.run('terraform output api_url')[0]
+    api_url = TDK::TerraformLogFilter.filter(
+      TDK::Command.run('terraform output api_url'))[0]
 
     result = ApiMethodTest.fetch(api_url, 'existing')
     raise "Error while querying the API (got: #{result})" if result != 'Found'

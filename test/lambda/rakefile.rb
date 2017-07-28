@@ -24,7 +24,8 @@ namespace 'lambda' do
   end
 
   task :validate, [:prefix] do
-    api_url = TDK::Command.run('terraform output api_url')[0]
+    api_url = TDK::TerraformLogFilter.filter(
+      TDK::Command.run('terraform output api_url'))[0]
 
     if LambdaTest.fetch(api_url, 'hello', 'Steve') != 'Hello Steve'
       raise 'Error while querying the API'
