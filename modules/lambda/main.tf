@@ -48,6 +48,6 @@ resource "aws_lambda_function" "lambda_function" {
   tags             = "${var.tags}" 
 
   environment {
-    variables = "${var.variables}"
+    variables = "${var.env_vars}"
   }
 }

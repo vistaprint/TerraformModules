@@ -42,7 +42,7 @@ variable "principal" {
   description = "The principal who is getting this permission (e.g., s3.amazonaws.com)."
 }
 
-variable "variables" {
+variable "env_vars" {
   description = "A map that defines environment variables for the lambda function."
   type = "map"
   default = { dummy_ = "1" }

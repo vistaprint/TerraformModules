@@ -85,7 +85,7 @@ module "lambdas" {
     }
   }
 
-  variables = {
+  env_vars = {
     foo = "FOO"
     bar = "BAR"
   }
