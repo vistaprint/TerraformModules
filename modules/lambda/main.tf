@@ -44,5 +44,6 @@ resource "aws_lambda_function" "lambda_function" {
   handler          = "${element(values(var.function_names_and_handlers), count.index)}"
   source_code_hash = "${base64sha256(file("${var.lambda_file}"))}"
   runtime          = "${var.runtime}"
-  timeout		       = "${var.timeout}"
+  timeout          = "${var.timeout}"
+  tags             = "${var.tags}" 
 }

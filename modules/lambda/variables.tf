@@ -37,3 +37,9 @@ variable "statement_id" {
 variable "principal" {
   description = "The principal who is getting this permission. e.g. s3.amazonaws.com"
 }
+
+variable "tags" {
+  description = "Tags to apply to each lambda"
+  type = "map"
+  default = {}
+}
