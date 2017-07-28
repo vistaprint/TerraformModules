@@ -47,3 +47,9 @@ variable "variables" {
   type = "map"
   default = { dummy_ = "1" }
 }
+
+variable "tags" {
+  description = "Tags to apply to each lambda"
+  type = "map"
+  default = {}
+}

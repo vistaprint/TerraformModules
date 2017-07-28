@@ -9,4 +9,6 @@ resource "aws_dynamodb_table" "table" {
     name = "ItemKey"
     type = "S"
   }
+
+  tags = "${var.tags}"
 }
