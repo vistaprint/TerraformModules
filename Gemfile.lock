@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    TerraformDevKit (0.1.6)
+    TerraformDevKit (0.1.8)
       aws-sdk (~> 2.9.37)
       rubyzip (~> 1.2.1)
     aws-sdk (2.9.44)
@@ -23,7 +23,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  TerraformDevKit (~> 0.1.6)!
+  TerraformDevKit (~> 0.1.8)!
   rake!
   rubyzip!
 

@@ -24,7 +24,9 @@ namespace 'api_path' do
   end
 
   task :validate, [:prefix] do
-    api_url = TDK::Command.run('terraform output api_url')[0]
+    api_url = TDK::TerraformLogFilter.filter(
+      TDK::Command.run('terraform output api_url'))[0]
+
     if ApiPathTest.fetch(api_url, 'Steve') != 'Hello Steve'
       raise 'Error while querying the API'
     end

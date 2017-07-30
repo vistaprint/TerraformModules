@@ -25,7 +25,8 @@ namespace 'api_deployment' do
 
   # TODO: test that caching is enabled
   task :validate, [:prefix] do
-    api_url = TDK::Command.run('terraform output api_url')[0]
+    api_url = TDK::TerraformLogFilter.filter(
+      TDK::Command.run('terraform output api_url'))[0]
 
     result = ApiDeploymentTest.fetch(api_url)
 
