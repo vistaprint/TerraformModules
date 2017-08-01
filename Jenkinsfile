@@ -33,10 +33,7 @@ pipeline {
                 // manually define GIT_COMMIT as git plugin is broken:
                 // https://issues.jenkins-ci.org/browse/JENKINS-35230
                 env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                env.RESULT = 'failure'
-                if (currentBuild.currentResult == 'SUCCESS') {
-                    env.RESULT = 'success'
-                }
+                env.RESULT = (currentBuild.currentResult == 'SUCCESS') ? 'success' : 'failure'
             }
             withCredentials([usernamePassword(
                 credentialsId: 'terraform-modules-github',
