@@ -16,7 +16,7 @@ ENV['PATH'] = TDK::OS.join_env_path(
 
 HOSTNAME = Socket.gethostname
 DATE = Time.new.strftime('%y%m%d%H%M%S')
-DEFAULT_PREFIX = "#{HOSTNAME}_#{DATE}_".freeze
+DEFAULT_PREFIX = "TM_#{HOSTNAME}_#{DATE}_".freeze
 
 MODULES_TO_TEST = Rake::FileList.new('test/*')
 
