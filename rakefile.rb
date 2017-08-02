@@ -33,7 +33,7 @@ def run_task_on_single_module(module_path, task_name)
   rescue RuntimeError => e
     puts e.message
     puts e.backtrace.join("\n")
-    TDK::BackupState.backup(DEFAULT_PREFIX)
+    Rake::Task["#{namespace}:clean"].invoke(DEFAULT_PREFIX)
     raise "Error testing module (#{module_path})"
   end
 end
