@@ -23,6 +23,7 @@ module "sample_method" {
 {"statusCode": #if($input.params('q')=="existing")200#{else}404#end}
 EOF
   }
+  passthrough_behavior = "NEVER"
   responses = {
     "200" = {
       content_type = "text/plain"
