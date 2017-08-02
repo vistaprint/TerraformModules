@@ -21,6 +21,8 @@ module "lambda" {
       bar = "BAR"
   }
 
+  memory_size  = "256"
+
   source_arn   = "arn:aws:execute-api:${var.region}:${var.accountId}:${aws_api_gateway_rest_api.api.id}/*/GET/*/*"
   statement_id = "AllowExecutionFromAPIGateway"
   policy       = "${data.template_file.example_policy.rendered}"

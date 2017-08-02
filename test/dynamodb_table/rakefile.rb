@@ -14,7 +14,7 @@ namespace 'dynamodb_table' do
     end
   end
 
-  task :validate, [:prefix] do |t, args|
+  task :validate, [:prefix] do |_, args|
     aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
     dynamo_db = TDK::DynamoDB.new(
       aws_config.credentials,
