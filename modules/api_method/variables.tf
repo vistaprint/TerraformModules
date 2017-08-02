@@ -23,6 +23,11 @@ variable "querystrings" {
   default = {}
 }
 
+variable "passthrough_behavior" {
+  description = "The integration passthrough behavior (WHEN_NO_MATCH, WHEN_NO_TEMPLATES, NEVER)."
+  default = "WHEN_NO_MATCH"
+}
+
 variable "headers" {
   description = "Map containing the headers (name => value)"
   type = "map"

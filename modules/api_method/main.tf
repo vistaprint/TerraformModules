@@ -42,6 +42,7 @@ resource "aws_api_gateway_integration" "integration" {
       lookup(var.request, "content_type", var.default_content_type),
       lookup(var.request, "template", "")
     )}"
+  passthrough_behavior = "${var.passthrough_behavior}"
 }
 
 resource "aws_api_gateway_method_response" "responses" {
