@@ -8,7 +8,7 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'bundle install'
-                sh 'echo "terraform-version: 0.10.0-rc1" > config/config.yml'
+                sh 'echo "terraform-version: 0.10.0" > config/config.yml'
             }
         }
         stage('Test') {

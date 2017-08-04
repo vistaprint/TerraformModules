@@ -136,10 +136,12 @@ namespace 'module_name' do
   load '../../scripts/tasks.rake'
 
   module ModuleNameTest
-    def self.fetch(api_url, cmd, name)
+    def self.request(api_url, cmd, name)
       url = "#{api_url}/#{cmd}/#{name}"
-      puts("Fetching #{url}")
-      Net::HTTP.get_response(URI(url))
+      TDK.with_retry(10, sleep_time: 5) do
+        puts("Fetching #{url}")
+        TDK::Request.new(url)
+      end
     end
   end
   
@@ -151,9 +153,9 @@ namespace 'module_name' do
 
   task :validate, [:prefix] do |t, args|
     api_url = TDK::TerraformLogFilter.filter(
-        TDK::Command.run('terraform output api_url'))[0]
+      TDK::Command.run('terraform output api_url'))[0]
 
-    if ModuleNameTest.fetch(api_url, 'hello', 'Steve').body != 'Hello Steve'
+    if ModuleNameTest.request(api_url, 'hello', 'Steve').read != 'Hello Steve'
       raise 'Error while querying the API'
     end
   end
@@ -162,4 +164,4 @@ end
 
 Both tasks receive a `prefix` parameter that contains the prefix to be used to create all the resources in AWS. In the previous example the prefix is not used. But, it might be necessary to use if, for instance, the test uses the Ruby AWS SDK to directly inspect the created resources.
 
-Helper methods should be placed into a module to avoid name collisions with methods from other rake files. The naming convention is to use the name of the module (in PascalCase) with the postfix `Test` (e.g., `ModuleNameTest` for a module called `module_name`).
+Helper methods should be placed into a module to avoid name collisions with methods from other rake files. The naming convention is to use the name of the module (in PascalCase) with the postfix `Test` (e.g., `ModuleNameTest` for a module called `module_name`). Alternatively, when grouping multiple tests into a single class (as in a test fixture), it is also acceptable to use `ModuleNameShould`.
