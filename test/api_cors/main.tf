@@ -44,7 +44,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Test"
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url} 10"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url} 120"
   }
 }
 
