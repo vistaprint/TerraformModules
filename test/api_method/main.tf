@@ -145,19 +145,19 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Test"
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url} 120"
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/redirect"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/redirect 120"
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/caching/foo"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/caching/foo 120"
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/passthrough"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/passthrough 120"
   }
 }
 

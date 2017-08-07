@@ -1,5 +1,6 @@
 source 'https://rubygems.org' do
   gem 'rake'
+  gem 'rspec'
   gem 'rubyzip'
-  gem 'TerraformDevKit', '~> 0.1.8'
+  gem 'TerraformDevKit', '~> 0.1.9'
 end

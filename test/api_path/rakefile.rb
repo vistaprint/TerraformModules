@@ -1,5 +1,3 @@
-require 'open-uri'
-require 'openssl'
 require 'zip'
 
 Zip.setup do |c|
@@ -8,14 +6,6 @@ end
 
 namespace 'api_path' do
   load '../../scripts/tasks.rake'
-
-  module ApiPathTest
-    def self.fetch(api_url, name)
-      url = "#{api_url}/hello/#{name}"
-      puts("Fetching #{url}")
-      open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
-    end
-  end
 
   task :prepare, [:prefix] do
     Zip::File.open('sample_lambda.zip', Zip::File::CREATE) do |zipfile|
@@ -27,7 +17,11 @@ namespace 'api_path' do
     api_url = TDK::TerraformLogFilter.filter(
       TDK::Command.run('terraform output api_url'))[0]
 
-    if ApiPathTest.fetch(api_url, 'Steve') != 'Hello Steve'
+    response = TDK.with_retry(10, sleep_time: 5) do
+      TDK::Request.new("#{api_url}/hello/Steve").execute(raise_on_codes: ['500'])
+    end
+
+    if response.status[0] != '200' || response.read != 'Hello Steve'
       raise 'Error while querying the API'
     end
   end

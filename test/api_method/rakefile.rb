@@ -1,45 +1,53 @@
-require 'open-uri'
-require 'openssl'
+require 'rspec'
 
 namespace 'api_method' do
   load '../../scripts/tasks.rake'
 
-  module ApiMethodTest
-    def self.fetch(api_url, q)
-      url = "#{api_url}?q=#{q}"
-      puts("Fetching #{url}")
-      open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
-    rescue OpenURI::HTTPError => error
-      error.io.read
+  module ApiMethodShould
+    extend ::RSpec::Matchers
+
+    def self.distinguish_query_string_values(api_url)
+      response = request("#{api_url}?q=existing")
+      expect(response.status[0]).to eq('200')
+      expect(response.read).to eq('Found')
+
+      response = request("#{api_url}?q=nonexisting")
+      expect(response.status[0]).to eq('404')
+      expect(response.read).to eq('Not found')
     end
 
-    def self.fetch_no_query_strings(api_url)
-      puts("Fetching #{api_url}")
-      open(api_url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE)
-    rescue OpenURI::HTTPError => error
-      { status: error.io.status[0], message: error.io.read }
-    else
-      {}
+    def self.validate_query_string_existance(api_url)
+      response = request(api_url)
+      expect(response.status[0]).to eq('400')
+      expect(response.read).to match(/Missing required request parameters: \[q\]/)
     end
 
-    def self.fetch_redirect(api_url)
-      url = "#{api_url}/redirect"
-      puts("Fetching #{url}")
-      open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE, redirect: false)
-    rescue OpenURI::HTTPRedirect => error
-      { status: error.io.status[0], location: error.uri.to_s }
-    else
-      {}
+    def self.return_headers(api_url)
+      response = request("#{api_url}/redirect")
+      expect(response.status[0]).to eq('301')
+      expect(response.meta['location']).to eq('http://www.example.com')
     end
 
-    def self.fetch_with_content_type(api_url, content_type)
-      url = "#{api_url}/passthrough"
-      puts("Fetching #{url}")
-      open(url,
-           'Content-Type' => content_type,
-           ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).status[0]
-    rescue OpenURI::HTTPError => error
-      error.io.status[0]
+    def self.reject_invalid_content_type(api_url)
+      response = request(
+        "#{api_url}/passthrough",
+        headers: { 'Content-Type' => 'text/plain' }
+      )
+      expect(response.status[0]).to eq('415')
+
+      response = request(
+        "#{api_url}/passthrough",
+        headers: { 'Content-Type' => 'application/json' }
+      )
+      expect(response.status[0]).to eq('200')
+    end
+
+    def self.request(url, headers: {})
+      TDK.with_retry(10, sleep_time: 5) do
+        TDK::Request
+          .new(url, headers: headers)
+          .execute(raise_on_codes: ['500'])
+      end
     end
   end
 
@@ -47,27 +55,9 @@ namespace 'api_method' do
     api_url = TDK::TerraformLogFilter.filter(
       TDK::Command.run('terraform output api_url'))[0]
 
-    result = ApiMethodTest.fetch(api_url, 'existing')
-    raise "Error while querying the API (got: #{result})" if result != 'Found'
-
-    result = ApiMethodTest.fetch(api_url, 'nonexisting')
-    raise "Error while querying the API (got: #{result})" if result != 'Not found'
-
-    result = ApiMethodTest.fetch_no_query_strings(api_url)
-    if result[:status] != '400' ||
-       result[:message] !~ /Missing required request parameters: \[q\]/
-      raise "Error while querying the API (got: #{result})"
-    end
-
-    result = ApiMethodTest.fetch_redirect(api_url)
-    if result[:status] != '301' || result[:location] != 'http://www.example.com'
-      raise "Error while querying the API (got: #{result})"
-    end
-
-    status = ApiMethodTest.fetch_with_content_type(api_url, 'text/plain')
-    raise "Expected 415 status code, got #{status}" if status != '415'
-
-    status = ApiMethodTest.fetch_with_content_type(api_url, 'application/json')
-    raise "Expected 200 status code, got #{status}" if status != '200'
+    ApiMethodShould.distinguish_query_string_values(api_url)
+    ApiMethodShould.validate_query_string_existance(api_url)
+    ApiMethodShould.return_headers(api_url)
+    ApiMethodShould.reject_invalid_content_type(api_url)
   end
 end

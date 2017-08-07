@@ -1,6 +1,5 @@
 require 'aws-sdk'
-require 'open-uri'
-require 'openssl'
+require 'rspec'
 require 'zip'
 
 Zip.setup do |c|
@@ -10,11 +9,33 @@ end
 namespace 'lambda' do
   load '../../scripts/tasks.rake'
 
-  module LambdaTest
-    def self.fetch(api_url, cmd, name)
-      url = "#{api_url}/#{cmd}/#{name}"
-      puts("Fetching #{url}")
-      open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
+  module LambdaShould
+    extend ::RSpec::Matchers
+
+    def self.return_a_value(api_url)
+      response = request("#{api_url}/hello/Steve")
+      expect(response.status[0]).to eq('200')
+      expect(response.read).to eq('Hello Steve')
+    end
+
+    def self.access_environment_variables(api_url)
+      response = request("#{api_url}/printvar/foo")
+      expect(response.status[0]).to eq('200')
+      expect(response.read).to eq('FOO')
+
+      response = request("#{api_url}/printvar/bar")
+      expect(response.status[0]).to eq('200')
+      expect(response.read).to eq('BAR')
+    end
+
+    def self.use_specified_memory_size(function_name)
+      expect(memory_size(function_name)).to eq(256)
+    end
+
+    def self.request(url)
+      TDK.with_retry(10, sleep_time: 5) do
+        TDK::Request.new(url).execute(raise_on_codes: ['500'])
+      end
     end
 
     def self.memory_size(function_name)
@@ -40,19 +61,8 @@ namespace 'lambda' do
     api_url = TDK::TerraformLogFilter.filter(
       TDK::Command.run('terraform output api_url'))[0]
 
-    if LambdaTest.fetch(api_url, 'hello', 'Steve') != 'Hello Steve'
-      raise 'Error while querying the API'
-    end
-
-    if LambdaTest.fetch(api_url, 'printvar', 'foo') != 'FOO'
-      raise 'Error while querying the API'
-    end
-
-    if LambdaTest.fetch(api_url, 'printvar', 'bar') != 'BAR'
-      raise 'Error while querying the API'
-    end
-
-    size = LambdaTest.memory_size("#{args.prefix}LambdaTestHello")
-    raise "Incorrect memory size. Expected 256, got #{size}" if size != 256
+    LambdaShould.return_a_value(api_url)
+    LambdaShould.access_environment_variables(api_url)
+    LambdaShould.use_specified_memory_size("#{args.prefix}LambdaTestHello")
   end
 end

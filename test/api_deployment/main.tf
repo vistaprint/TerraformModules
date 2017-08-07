@@ -70,11 +70,11 @@ resource "null_resource" "wait_for_deployment" {
   depends_on = ["module.deployment"]
 
   provisioner "local-exec" {
-    command = "wait_for_url ${module.deployment.api_url}"
+    command = "wait_for_url ${module.deployment.api_url} 120"
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")}"
+    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 120"
   }
 }
 
