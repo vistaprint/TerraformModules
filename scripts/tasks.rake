@@ -3,6 +3,9 @@ require 'TerraformDevKit'
 
 TDK = TerraformDevKit unless defined? TDK
 
+# TODO: only initialize it if it was not initialized before
+TDK::Configuration.init('../../config/config.yml')
+
 def add_aws_variables(cmd)
   aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
   profile = aws_config.profile
@@ -39,10 +42,26 @@ task :preflight, [:prefix, :teardown] => :apply do |_, args|
   end
 end
 
+def clean_aws_logs(prefix)
+  aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+
+  cmd = "aws_log_cleaner -p -l #{prefix} -o -r #{aws_config.region}"
+  if aws_config.profile.nil?
+    credentials = aws_config.credentials
+    cmd += " -k #{credentials.access_key_id}"
+    cmd += " -s #{credentials.secret_access_key}"
+  else
+    cmd += " -P #{aws_config.profile}"
+  end
+
+  TDK::Command.run(cmd)
+end
+
 desc 'Destroys the infrastructure'
 task :destroy, [:prefix] => :init do |_, args|
   cmd = "terraform destroy -force -var prefix=#{args.prefix}"
   TDK::Command.run(add_aws_variables(cmd))
+  clean_aws_logs(args.prefix)
 end
 
 desc 'Cleans up the test folder (after destroying the infrastructure)'
