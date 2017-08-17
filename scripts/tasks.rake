@@ -3,6 +3,13 @@ require 'TerraformDevKit'
 
 TDK = TerraformDevKit unless defined? TDK
 
+# TODO: prevent multiple initializations
+TDK::Configuration.init('../../config/config.yml')
+
+def check_arguments(args)
+  raise 'ERROR: prefix not provided' unless args.key?(:prefix)
+end
+
 def add_aws_variables(cmd)
   aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
   profile = aws_config.profile
@@ -21,6 +28,8 @@ end
 
 desc 'Creates the infrastructure'
 task :apply, [:prefix] => :init do |_, args|
+  check_arguments(args)
+
   cmd = "terraform apply -var prefix=#{args.prefix}"
   TDK::Command.run(add_aws_variables(cmd))
 end
@@ -28,6 +37,7 @@ end
 desc 'Runs preflight'
 task :preflight, [:prefix, :teardown] => :apply do |_, args|
   args.with_defaults(teardown: 'true')
+  check_arguments(args)
 
   namespace = File.basename(Dir.pwd)
   validate_task = "#{namespace}:validate"
@@ -41,6 +51,7 @@ end
 
 desc 'Destroys the infrastructure'
 task :destroy, [:prefix] => :init do |_, args|
+  check_arguments(args)
   cmd = "terraform destroy -force -var prefix=#{args.prefix}"
   TDK::Command.run(add_aws_variables(cmd))
 end

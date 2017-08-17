@@ -26,13 +26,13 @@ resource "aws_iam_role_policy" "policy_for_lambda" {
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
-  count = "${length(var.functions)}"
-  
-  statement_id  = "${var.statement_id}"
+  count = "${length(var.functions) * var.permission_count}"
+
   action        = "lambda:InvokeFunction"
-  function_name = "${element(aws_lambda_function.lambda_function.*.arn, count.index)}"
-  principal     = "${var.principal}"
-  source_arn    = "${var.source_arn}"
+  function_name = "${element(aws_lambda_function.lambda_function.*.arn, count.index / var.permission_count)}"
+  principal     = "${lookup(var.permissions[count.index % var.permission_count], "principal")}"
+  statement_id  = "${lookup(var.permissions[count.index % var.permission_count], "statement_id")}"
+  source_arn    = "${lookup(var.permissions[count.index % var.permission_count], "source_arn")}"
 } 
 
 resource "aws_lambda_function" "lambda_function" {

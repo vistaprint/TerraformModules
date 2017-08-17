@@ -11,8 +11,21 @@ EOF
   type = "map"
 }
 
-variable "source_arn" {
-  description = "The source arn of the API that will invoke the lambda."
+# TODO: remove once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
+variable "permission_count" {
+  description = "Number of permissions to attach to the lambda."
+  default = 0
+}
+
+variable "permissions" {
+  description = <<EOF
+A list of maps with the settings for each permission. The required settings are:
+  - principal: The principal who is getting this permission (e.g., s3.amazonaws.com).
+  - statement_id: A unique statement identifier.
+  - source_arn: The source arn of the API that will invoke the lambda.
+EOF
+  type = "list"
+  default = []
 }
 
 variable "policy" {
@@ -32,14 +45,6 @@ variable "prefix" {
 variable "timeout" {
   description = "The timeout the function should have. Defaults to 300."
   default = 300
-}
-
-variable "statement_id" {
-  description = "A unique statement identifier."
-}
-
-variable "principal" {
-  description = "The principal who is getting this permission (e.g., s3.amazonaws.com)."
 }
 
 variable "env_vars" {

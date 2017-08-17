@@ -39,9 +39,16 @@ module "lambdas" {
 
   lambda_file = "lambda.zip"
   functions = { ApiDeploymentTestLambda = { handler = "lambda.handler" }}
-  source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/"
-  statement_id = "AllowExecutionFromAPIGateway"
-  principal = "apigateway.amazonaws.com"
+
+  permission_count = 1
+  permissions = [
+    {
+      principal    = "apigateway.amazonaws.com"
+      statement_id = "AllowExecutionFromAPIGateway"
+      source_arn   = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/GET/"
+    }
+  ]
+
   prefix = "${var.prefix}"
   runtime = "python3.6"
 }
@@ -70,11 +77,11 @@ resource "null_resource" "wait_for_deployment" {
   depends_on = ["module.deployment"]
 
   provisioner "local-exec" {
-    command = "wait_for_url ${module.deployment.api_url} 120"
+    command = "wait_for_url ${module.deployment.api_url} 600"
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 120"
+    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 600"
   }
 }
 
