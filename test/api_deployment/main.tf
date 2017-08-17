@@ -81,7 +81,7 @@ resource "null_resource" "wait_for_deployment" {
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 120"
+    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 600"
   }
 }
 
