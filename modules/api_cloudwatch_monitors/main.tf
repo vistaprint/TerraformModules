@@ -7,7 +7,7 @@ variable "default_evaluation_periods" {
 }
 
 variable "default_period" {
-  default = 120
+  default = 60
 }
 
 variable "default_comparison_operator" {
