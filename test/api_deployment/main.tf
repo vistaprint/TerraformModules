@@ -77,7 +77,7 @@ resource "null_resource" "wait_for_deployment" {
   depends_on = ["module.deployment"]
 
   provisioner "local-exec" {
-    command = "wait_for_url ${module.deployment.api_url} 120"
+    command = "wait_for_url ${module.deployment.api_url} 600"
   }
 
   provisioner "local-exec" {

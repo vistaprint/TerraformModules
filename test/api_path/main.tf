@@ -70,7 +70,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "Prod"
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/hello/foo 120"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/hello/foo 600"
   }
 }
 
