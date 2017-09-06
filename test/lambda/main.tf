@@ -32,7 +32,7 @@ module "hello_method" {
   parent = "${element(module.hello_endpoint.path_resource_id, 1)}"
   request = {
     type = "AWS"
-    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns[0]}/invocations" 
+    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns["LambdaTestHello"]}/invocations" 
     template = <<EOF
 {
   "name": "$input.params('name')"
@@ -54,7 +54,7 @@ module "printvars_method" {
   parent = "${element(module.printvars_endpoint.path_resource_id, 1)}"
   request = {
     type = "AWS"
-    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns[1]}/invocations" 
+    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns["LambdaTestPrintVars"]}/invocations" 
     template = <<EOF
 {
   "name": "$input.params('name')"
