@@ -4,7 +4,7 @@ This module creates multiple lambdas that can be invoked by an API Gateway. Each
 
 ```hcl
 module "lambda" { 
-  source      = git::https://github.com/betabandido/terraformmodules.git//modules/lambda"
+  source      = git::https://github.com/vistaprint/terraformmodules.git//modules/lambda"
   lambda_file = "lambda.zip"
 
   functions = {

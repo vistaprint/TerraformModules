@@ -6,13 +6,13 @@ The module is actually a set of modules that allow users to instatiate path reso
 
 ```hcl
 module "path" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_path/path2"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_path/path2"
   path   = ["hello", "{name}"]
   # ...
 }
 
 module "method" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_method"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
   parent = "${element(module.path.path_resource_id, 1)}"
   # ...
 }
@@ -22,7 +22,7 @@ As another example, an endpoint with three path resources (`/hello/{language}/{n
 
 ```hcl
 module "path" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_path/path3"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_path/path3"
   path   = ["hello", "{language}", "{name}"]
   # ...
 }
@@ -39,14 +39,14 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 module "path" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_path/path2"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_path/path2"
   api    = "${aws_api_gateway_rest_api.api.id}"
   parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
   path   = ["hello", "{name}"]
 }
 
 module "method" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_method"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
   api    = "${aws_api_gateway_rest_api.api.id}"
   parent = "${element(module.path.path_resource_id, 1)}"
   request = {

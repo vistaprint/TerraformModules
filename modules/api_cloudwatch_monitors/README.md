@@ -16,7 +16,7 @@ See the `variables.tf` file in the module folder for more information on the mod
 
 ```hcl
 module "sample_monitors" {
-  source     = "git::https://github.com/betabandido/terraformmodules.git//modules/api_cloudwatch_monitors"
+  source     = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_cloudwatch_monitors"
   api_name   = "SampleApi"
   stage_name = "Prod" 
 

@@ -20,7 +20,7 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 module "method" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_method"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
   api    = "${aws_api_gateway_rest_api.api.id}"
   parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
   request = {
@@ -40,7 +40,7 @@ EOF
 }
 
 module "gateway_responses" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/api_gateway_responses"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_gateway_responses"
   api    = "${aws_api_gateway_rest_api.api.id}"
 }
 ```

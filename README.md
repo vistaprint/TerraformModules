@@ -30,13 +30,13 @@ This command may also install other required gems and [rake](https://github.com/
 
 To use modules within this repository set the source for the module to:
 
-    source = "git::https://github.com/betabandido/terraformmodules.git//modules/MODULE_NAME"
+    source = "git::https://github.com/vistaprint/terraformmodules.git//modules/MODULE_NAME"
     
 where `MODULE_NAME` is the name of the module you wish to reference.
 
 You can also target a specific branch or version tag by appending `?ref=` followed by either a tag name or branch name. For example:
 
-    source = "git::https://github.com/betabandido/terraformmodules.git?ref=v0.0.4//modules/MODULE_NAME"
+    source = "git::https://github.com/vistaprint/terraformmodules.git?ref=v0.0.4//modules/MODULE_NAME"
 
 ## Example
 
@@ -44,7 +44,7 @@ The following example uses the module `dynamodb_table` to create two DynamoDB ta
 
 ```hcl
 module "aws_dynamodb_tables" {
-  source = "git::https://github.com/betabandido/terraformmodules.git//modules/dynamodb_table"
+  source = "git::https://github.com/vistaprint/terraformmodules.git//modules/dynamodb_table"
   table_info = [
     {
       name = "Table1"
@@ -75,20 +75,20 @@ In order to run this command it is necessary to have valid AWS credentials in pl
   * AWS_REGION
 * Set the profile and region fields in `config/config.yml` (see [Configuration File section](#configuration-file))
 
-All the resources created in AWS will use a prefix to avoid name collisions. The default prefix is composed of the hostname and the current date and time (e.g., `HOSTNAME_1701021830_` for an execution that takes place on January 2nd 2017 at 6:30pm).
+All the resources created in AWS will use a prefix to avoid name collisions. The default prefix starts with `TM_` and it uses the hostname and the current date and time (e.g., `TM_HOSTNAME_1701021830_` for an execution that takes place on January 2nd 2017 at 6:30pm on a system named `HOSTNAME`).
 
 # Configuration File
 
 The file `config/template-config.yml` contains a template for the configuration file. Copy this file to `config/config.yml` and configure it as required. Currently, this file follows the next structure:
 
 ```yaml
-terraform-version: 0.10.0-rc1
+terraform-version: 0.10.3
 aws:
   profile: A_PROFILE
   region: A_REGION
 ```
 
-**NOTE**: Testing some of the modules requires Terraform 0.10.0, as it contains merged pull requests for supporting [cache key parameters](https://github.com/terraform-providers/terraform-provider-aws/pull/893) and [method request validators](https://github.com/terraform-providers/terraform-provider-aws/pull/1064). At this moment version 0.10.0 has not been released yet, but it is possible to use the release candidate 1 (as the previous configuration template shows).
+**NOTE**: Testing some of the modules requires Terraform 0.10.0 or newer, as support for [cache key parameters](https://github.com/terraform-providers/terraform-provider-aws/pull/893) and [method request validators](https://github.com/terraform-providers/terraform-provider-aws/pull/1064) is required.
 
 # Adding a New Module
 
@@ -125,9 +125,7 @@ where `module_name` is the name of the module under test.
 
 **IMPORTANT:** the name of the Terraform module should match the name of the namespace in the rake file, as well as the name of the subfolder in the `test` folder. Otherwise, the build scripts that orchestrate the testing process for all the modules will fail.
 
-In addition to creating and destroying the infrastructure related to the module under test, it is recommended to test whether the infrastructure was correctly created. To do so, add a `validate` task to the rake file, and conduct the necessary tests.
-
-In some cases it might also be necessary to do some preparation before the infrastructure is created (e.g., zipping the code of a lambda method). Use the `prepare` task to do so.
+In addition to creating and destroying the infrastructure related to the module under test, it is recommended to test whether the infrastructure was correctly created. To do so, add a `validate` task to the rake file, and conduct the necessary tests. In some cases it might also be necessary to do some preparation before the infrastructure is created (e.g., zipping the code of a lambda method). Use the `prepare` task to do so.
 
 The following example shows the usage of both tasks:
 
