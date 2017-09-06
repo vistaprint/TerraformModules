@@ -118,7 +118,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/printvars/foo 600"
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/printvar/foo 600"
   }
 }
 
