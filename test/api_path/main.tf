@@ -25,7 +25,7 @@ module "method" {
   parent = "${element(module.path.path_resource_id, 1)}"
   request = {
     type = "AWS"
-    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambda.lambda_arns[0]}/invocations" 
+    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambda.lambda_arns["LambdaModuleTest1"]}/invocations" 
     template = <<EOF
 {
   "name": "$input.params('name')"

@@ -18,7 +18,7 @@ module "method" {
   parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
   request = {
     type = "AWS"
-    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns[0]}/invocations"
+    uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns["ApiDeploymentTestLambda"]}/invocations"
     template = <<EOF
 {}
 EOF
@@ -81,7 +81,7 @@ resource "null_resource" "wait_for_deployment" {
   }
 
   provisioner "local-exec" {
-    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 600"
+    command = "wait_for_url ${replace(module.deployment.api_url, "/Default", "/Cached")} 1800"
   }
 }
 
