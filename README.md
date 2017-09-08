@@ -36,7 +36,7 @@ where `MODULE_NAME` is the name of the module you wish to reference.
 
 You can also target a specific branch or version tag by appending `?ref=` followed by either a tag name or branch name. For example:
 
-    source = "git::https://github.com/vistaprint/terraformmodules.git?ref=v0.0.4//modules/MODULE_NAME"
+    source = "git::https://github.com/vistaprint/terraformmodules.git?ref=v0.0.14//modules/MODULE_NAME"
 
 ## Example
 
@@ -77,12 +77,24 @@ In order to run this command it is necessary to have valid AWS credentials in pl
 
 All the resources created in AWS will use a prefix to avoid name collisions. The default prefix starts with `TM_` and it uses the hostname and the current date and time (e.g., `TM_HOSTNAME_1701021830_` for an execution that takes place on January 2nd 2017 at 6:30pm on a system named `HOSTNAME`).
 
+## Excluding Tests
+
+Some modules may require account-specific information (e.g., the addresses of existing subnets to be used by an EC2 Container). These types of modules should reveice this information as input variables defined in a `.tfvars` file.
+
+Certain users, however, might not need (or even be able) to test a module requiring such account-specific information. To prevent the whole testing process from failing due to a particular module, users can provide a list of modules to exclude from testing. To do so, define an environment variable (`TM_EXCLUDE_MODULES`) with the list of modules to exclude. For instance,
+
+```bash
+TM_EXCLUDE_MODULES=foo,bar rake preflight
+```
+
+will run preflight on all modules except `foo` and `bar`.
+
 # Configuration File
 
 The file `config/template-config.yml` contains a template for the configuration file. Copy this file to `config/config.yml` and configure it as required. Currently, this file follows the next structure:
 
 ```yaml
-terraform-version: 0.10.3
+terraform-version: 0.10.4
 aws:
   profile: A_PROFILE
   region: A_REGION
