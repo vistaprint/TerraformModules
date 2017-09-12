@@ -39,7 +39,7 @@ module "options" {
 ### Deployment ###
 
 resource "aws_api_gateway_deployment" "deployment" {
-  depends_on = ["module.options"]
+  depends_on = ["module.method", "module.options"]
   rest_api_id = "${aws_api_gateway_rest_api.api.id}"
   stage_name  = "Test"
 
