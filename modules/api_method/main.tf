@@ -1,5 +1,6 @@
-variable "default_content_type" {
-  default = "application/json"
+locals {
+  default_content_type = "application/json"
+  default_template = "{}"
 }
 
 resource "aws_api_gateway_request_validator" "validator" {
@@ -39,8 +40,8 @@ resource "aws_api_gateway_integration" "integration" {
   cache_key_parameters = ["${formatlist("method.request.%s", var.cache_key_parameters)}"]
   request_templates = 
     "${map(
-      lookup(var.request, "content_type", var.default_content_type),
-      lookup(var.request, "template", "")
+      lookup(var.request, "content_type", local.default_content_type),
+      lookup(var.request, "template", local.default_template)
     )}"
   passthrough_behavior = "${var.passthrough_behavior}"
 }
@@ -70,8 +71,8 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
   selection_pattern = "${lookup(var.responses[element(keys(var.responses), count.index)], "selection_pattern")}"
 
   response_templates = "${map(
-    lookup(var.responses[element(keys(var.responses), count.index)], "content_type", var.default_content_type),
-    lookup(var.responses[element(keys(var.responses), count.index)], "template", "")
+    lookup(var.responses[element(keys(var.responses), count.index)], "content_type", local.default_content_type),
+    lookup(var.responses[element(keys(var.responses), count.index)], "template", local.default_template)
   )}"
 
   response_parameters = "${merge(
@@ -80,7 +81,7 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
       "'${lookup(
         var.responses[element(keys(var.responses), count.index)],
         "content_type",
-        var.default_content_type
+        local.default_content_type
       )}'"
     ),
     zipmap(
