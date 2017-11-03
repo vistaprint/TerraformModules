@@ -102,7 +102,3 @@ module "cache_key_parameters_values" {
   count = "${length(var.cache_key_parameters)}"
   value = "true"
 }
-
-resource "null_resource" "dummy_dependency" {
-  depends_on = ["aws_api_gateway_integration_response.integration_responses"]
-}
