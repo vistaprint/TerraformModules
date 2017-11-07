@@ -12,7 +12,9 @@ namespace 'dynamodb_autoscale' do
         scalable_dimension: scalable_dimension,
       }
 
-      targets = client.describe_scalable_targets(params).scalable_targets
+      resp = client.describe_scalable_targets(params)
+
+      targets = resp.scalable_targets
 
       if targets.length < 1
         raise "Scalable target does not exist"
@@ -37,7 +39,9 @@ namespace 'dynamodb_autoscale' do
         scalable_dimension: scalable_dimension,
       }
 
-      policies = client.describe_scaling_policies(params).scaling_policies
+      resp = client.describe_scaling_policies(params)
+
+      policies = resp.scaling_policies
 
       if policies.length < 1
         raise "Scalable target does not exist"
