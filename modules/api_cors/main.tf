@@ -22,7 +22,7 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   rest_api_id = "${var.api}"
   resource_id = "${var.parent}"
   http_method = "${aws_api_gateway_method.method.http_method}"
-  status_code = "200"
+  status_code = "${aws_api_gateway_method_response.response.status_code}"
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET'",
