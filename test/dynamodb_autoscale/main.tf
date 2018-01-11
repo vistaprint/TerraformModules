@@ -17,7 +17,8 @@ locals {
 }
 
 module "table" {
-  source = "../../modules/dynamodb_table"
+  source  = "vistaprint/dynamodb-tables/aws"
+  version = "0.0.1"
   table_info = "${local.table_info}"
 }
 
