@@ -30,7 +30,7 @@ desc 'Creates the infrastructure'
 task :apply, [:prefix] => :init do |_, args|
   check_arguments(args)
 
-  cmd = "terraform apply -var prefix=#{args.prefix}"
+  cmd = "terraform apply -auto-approve -var prefix=#{args.prefix}"
   TDK::Command.run(add_aws_variables(cmd))
 end
 
