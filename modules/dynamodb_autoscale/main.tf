@@ -63,6 +63,13 @@ resource "aws_appautoscaling_target" "read_autoscaling_target" {
   min_capacity       = "${local.read_autoscale["min_capacity"]}"
   max_capacity       = "${local.read_autoscale["max_capacity"]}"
   depends_on         = ["aws_iam_role_policy.autoscaling_role_policy"]
+
+   lifecycle {
+    ignore_changes = [
+      "role_arn",
+      "id"
+    ]
+  }
 }
 
 resource "aws_appautoscaling_policy" "read_autoscaling_policy" {
