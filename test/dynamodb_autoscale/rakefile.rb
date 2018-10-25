@@ -5,7 +5,6 @@ namespace 'dynamodb_autoscale' do
 
   module DynamoDbAutoscaleShould
     def self.have_autoscaling_target(client, service_namespace, resource_id, scalable_dimension, min_capacity, max_capacity)
-      
       params = {
         service_namespace: service_namespace, 
         resource_ids: [resource_id],
@@ -28,11 +27,9 @@ namespace 'dynamodb_autoscale' do
         puts resp.to_h
         raise 'Incorrect target'
       end
-
     end
 
     def self.have_autoscaling_policy(client, service_namespace, resource_id, scalable_dimension, target_value)
-      
       params = {
         service_namespace: service_namespace, 
         resource_id: resource_id,
@@ -55,13 +52,11 @@ namespace 'dynamodb_autoscale' do
         puts resp.to_h
         raise 'Incorrect policy'
       end
-
     end
   end
 
   task :validate, [:prefix] do |_, args|
-    
-    aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+    aws_config = TDK::Aws::AwsConfig.new(TDK::Configuration.get('aws'))
     
     client = Aws::ApplicationAutoScaling::Client.new({ 
       region: aws_config.region, 

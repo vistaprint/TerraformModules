@@ -39,7 +39,7 @@ namespace 'lambda' do
     end
 
     def self.memory_size(function_name)
-      aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+      aws_config = TDK::Aws::AwsConfig.new(TDK::Configuration.get('aws'))
       client = Aws::Lambda::Client.new(
         region: aws_config.region,
         credentials: aws_config.credentials
