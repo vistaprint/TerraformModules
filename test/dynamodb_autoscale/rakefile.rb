@@ -64,18 +64,48 @@ namespace 'dynamodb_autoscale' do
     })
 
     DynamoDbAutoscaleShould.have_autoscaling_target(
-        client, 
-        "dynamodb", 
-        "table/#{args.prefix}Table2",
-        "dynamodb:table:ReadCapacityUnits",
-        2,
-        20)
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table1",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      10)
 
     DynamoDbAutoscaleShould.have_autoscaling_policy(
-        client, 
-        "dynamodb", 
-        "table/#{args.prefix}Table2",
-        "dynamodb:table:ReadCapacityUnits",
-        50)
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table1",
+      "dynamodb:table:ReadCapacityUnits",
+      75)    
+
+    DynamoDbAutoscaleShould.have_autoscaling_target(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table2",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      8)
+
+    DynamoDbAutoscaleShould.have_autoscaling_policy(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table2",
+      "dynamodb:table:ReadCapacityUnits",
+      50)
+
+    DynamoDbAutoscaleShould.have_autoscaling_target(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table3",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      20)
+
+    DynamoDbAutoscaleShould.have_autoscaling_policy(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table3",
+      "dynamodb:table:ReadCapacityUnits",
+      70)      
   end
 end

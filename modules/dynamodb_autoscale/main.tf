@@ -1,19 +1,26 @@
 locals {
-
   autoscale_default = {
-      enabled = false
-      target_value       = 70
-      min_capacity       = 1
-      max_capacity       = 1
+    enabled      = false
+    target_value = 70
+    min_capacity = 1
+    max_capacity = 1
   }
 
-  read_autoscale = "${merge(local.autoscale_default, var.read_autoscale)}"
+  read_autoscale  = "${merge(local.autoscale_default, var.read_autoscale)}"
   write_autoscale = "${merge(local.autoscale_default, var.write_autoscale)}"
 }
 
+resource "null_resource" "wait_for_policy" {
+  triggers {
+    wait = "${var.policy_id}"
+  }
+}
+
 resource "aws_iam_role" "dynamodb_autoscale_role" {
+  count = "${var.create_role ? 1 : 0}"
+
   name = "${var.table_name}_autoscale_role"
-  
+
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -31,24 +38,27 @@ EOF
 }
 
 resource "aws_iam_role_policy" "autoscaling_role_policy" {
+  count = "${var.create_role ? 1 : 0}"
+
   name = "${var.table_name}_autoscaling_role_policy"
   role = "${aws_iam_role.dynamodb_autoscale_role.name}"
+
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:UpdateTable",
-                "cloudwatch:PutMetricAlarm",
-                "cloudwatch:DescribeAlarms",
-                "cloudwatch:DeleteAlarms"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:UpdateTable",
+        "cloudwatch:PutMetricAlarm",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:DeleteAlarms"
+      ],
+      "Resource": "*"
+    }
+  ]
 }
 EOF
 }
@@ -59,15 +69,18 @@ resource "aws_appautoscaling_target" "read_autoscaling_target" {
   service_namespace  = "dynamodb"
   resource_id        = "table/${var.table_name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
-  role_arn           = "${aws_iam_role.dynamodb_autoscale_role.arn}"
+  role_arn           = "${var.create_role ? join("", aws_iam_role.dynamodb_autoscale_role.*.arn) : var.role_arn}"
   min_capacity       = "${local.read_autoscale["min_capacity"]}"
   max_capacity       = "${local.read_autoscale["max_capacity"]}"
-  depends_on         = ["aws_iam_role_policy.autoscaling_role_policy"]
+  depends_on         = [
+    "aws_iam_role_policy.autoscaling_role_policy",
+    "null_resource.wait_for_policy"
+  ]
 
-   lifecycle {
+  lifecycle {
     ignore_changes = [
       "role_arn",
-      "id"
+      "id",
     ]
   }
 }
@@ -85,28 +98,31 @@ resource "aws_appautoscaling_policy" "read_autoscaling_policy" {
       predefined_metric_type = "DynamoDBReadCapacityUtilization"
     }
 
-    target_value       = "${local.read_autoscale["target_value"]}"
+    target_value = "${local.read_autoscale["target_value"]}"
   }
 
   # broken: will get fixed with https://github.com/terraform-providers/terraform-provider-aws/issues/538
-  depends_on         = ["aws_appautoscaling_target.read_autoscaling_target"]
+  depends_on = ["aws_appautoscaling_target.read_autoscaling_target"]
 }
 
 # DynamoDb write autoscaling policy
 resource "aws_appautoscaling_target" "write_autoscaling_target" {
-  count              = "${local.write_autoscale["enabled"] ? 1 : 0}"
+  count = "${local.write_autoscale["enabled"] ? 1 : 0}"
 
   service_namespace  = "dynamodb"
   resource_id        = "table/${var.table_name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
-  role_arn           = "${aws_iam_role.dynamodb_autoscale_role.arn}"
+  role_arn           = "${var.create_role ? join("", aws_iam_role.dynamodb_autoscale_role.*.arn) : var.role_arn}"
   min_capacity       = "${local.write_autoscale["min_capacity"]}"
   max_capacity       = "${local.write_autoscale["max_capacity"]}"
-  depends_on         = ["aws_iam_role_policy.autoscaling_role_policy"]
+  depends_on         = [
+    "aws_iam_role_policy.autoscaling_role_policy",
+    "null_resource.wait_for_policy"
+  ]  
 }
 
 resource "aws_appautoscaling_policy" "write_autoscaling_policy" {
-  count              = "${local.write_autoscale["enabled"] ? 1 : 0}"
+  count = "${local.write_autoscale["enabled"] ? 1 : 0}"
 
   name               = "${var.table_name}_write_autoscaling_policy"
   policy_type        = "TargetTrackingScaling"
@@ -118,10 +134,10 @@ resource "aws_appautoscaling_policy" "write_autoscaling_policy" {
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBWriteCapacityUtilization"
     }
-    
-  target_value       = "${local.write_autoscale["target_value"]}"
+
+    target_value = "${local.write_autoscale["target_value"]}"
   }
 
   # broken: will get fixed with https://github.com/terraform-providers/terraform-provider-aws/issues/538
-  depends_on         = ["aws_appautoscaling_target.write_autoscaling_target"]
+  depends_on = ["aws_appautoscaling_target.write_autoscaling_target"]
 }
