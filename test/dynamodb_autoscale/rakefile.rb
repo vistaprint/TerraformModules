@@ -5,7 +5,6 @@ namespace 'dynamodb_autoscale' do
 
   module DynamoDbAutoscaleShould
     def self.have_autoscaling_target(client, service_namespace, resource_id, scalable_dimension, min_capacity, max_capacity)
-      
       params = {
         service_namespace: service_namespace, 
         resource_ids: [resource_id],
@@ -28,11 +27,9 @@ namespace 'dynamodb_autoscale' do
         puts resp.to_h
         raise 'Incorrect target'
       end
-
     end
 
     def self.have_autoscaling_policy(client, service_namespace, resource_id, scalable_dimension, target_value)
-      
       params = {
         service_namespace: service_namespace, 
         resource_id: resource_id,
@@ -55,13 +52,11 @@ namespace 'dynamodb_autoscale' do
         puts resp.to_h
         raise 'Incorrect policy'
       end
-
     end
   end
 
   task :validate, [:prefix] do |_, args|
-    
-    aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+    aws_config = TDK::Aws::AwsConfig.new(TDK::Configuration.get('aws'))
     
     client = Aws::ApplicationAutoScaling::Client.new({ 
       region: aws_config.region, 
@@ -69,18 +64,48 @@ namespace 'dynamodb_autoscale' do
     })
 
     DynamoDbAutoscaleShould.have_autoscaling_target(
-        client, 
-        "dynamodb", 
-        "table/#{args.prefix}Table2",
-        "dynamodb:table:ReadCapacityUnits",
-        2,
-        20)
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table1",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      10)
 
     DynamoDbAutoscaleShould.have_autoscaling_policy(
-        client, 
-        "dynamodb", 
-        "table/#{args.prefix}Table2",
-        "dynamodb:table:ReadCapacityUnits",
-        50)
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table1",
+      "dynamodb:table:ReadCapacityUnits",
+      75)    
+
+    DynamoDbAutoscaleShould.have_autoscaling_target(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table2",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      8)
+
+    DynamoDbAutoscaleShould.have_autoscaling_policy(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table2",
+      "dynamodb:table:ReadCapacityUnits",
+      50)
+
+    DynamoDbAutoscaleShould.have_autoscaling_target(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table3",
+      "dynamodb:table:ReadCapacityUnits",
+      1,
+      20)
+
+    DynamoDbAutoscaleShould.have_autoscaling_policy(
+      client, 
+      "dynamodb", 
+      "table/#{args.prefix}Table3",
+      "dynamodb:table:ReadCapacityUnits",
+      70)      
   end
 end

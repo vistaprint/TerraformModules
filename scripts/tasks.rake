@@ -11,7 +11,7 @@ def check_arguments(args)
 end
 
 def add_aws_variables(cmd)
-  aws_config = TDK::AwsConfig.new(TDK::Configuration.get('aws'))
+  aws_config = TDK::Aws::AwsConfig.new(TDK::Configuration.get('aws'))
   profile = aws_config.profile
   region = aws_config.region
   cmd += " -var profile=#{profile}" unless profile.nil?
