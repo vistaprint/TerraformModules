@@ -63,3 +63,15 @@ variable "memory_size" {
   description = "Amount of memory in MB your Lambda Function can use at runtime. Defaults to 128."
   default = "128"
 }
+
+variable "create_role" {
+  description = "Whether to create a specific role and policy"
+
+  default = true
+}
+
+variable "role_arn" {
+  description = "Role ARN to use"
+
+  default = ""
+}
