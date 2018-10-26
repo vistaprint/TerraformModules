@@ -16,6 +16,10 @@ namespace 'lambda' do
       response = request("#{api_url}/hello/Steve")
       expect(response.status[0]).to eq('200')
       expect(response.read).to eq('Hello Steve')
+
+      response = request("#{api_url}/hello-external-role/Steve")
+      expect(response.status[0]).to eq('200')
+      expect(response.read).to eq('Hello Steve')
     end
 
     def self.access_environment_variables(api_url)
