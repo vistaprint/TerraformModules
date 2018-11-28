@@ -137,10 +137,41 @@ EOF
   }
 }
 
+### Test URI ###
+
+module "uri" {
+  source = "../../modules/api_path/path1"
+  api    = "${aws_api_gateway_rest_api.api.id}"
+  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  path   = ["uri"]
+}
+
+module "uri_method" {
+  source = "../../modules/api_method"
+  api    = "${aws_api_gateway_rest_api.api.id}"
+  parent = "${element(module.uri.path_resource_id, 0)}"
+  request = {
+    type = "HTTP"
+    uri = "http://httpstat.us/200"
+  }
+  responses = {
+    "200" = {
+      content_type = "text/plain"
+      selection_pattern = ""
+      template = "Found"
+    }
+    "404" = {
+      content_type = "text/plain"
+      selection_pattern = "404"
+      template = "Not found"
+    }
+  }
+}
+
 ### Deployment ###
 
 resource "aws_api_gateway_deployment" "deployment" {
-  depends_on = ["module.method", "module.redirect_method", "module.caching_method", "module.passthrough"]
+  depends_on = ["module.method", "module.redirect_method", "module.caching_method", "module.passthrough", "module.uri"]
   rest_api_id = "${aws_api_gateway_rest_api.api.id}"
   stage_name  = "Test"
 
@@ -159,6 +190,10 @@ resource "aws_api_gateway_deployment" "deployment" {
   provisioner "local-exec" {
     command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/passthrough 600"
   }
+
+  provisioner "local-exec" {
+    command = "wait_for_url ${aws_api_gateway_deployment.deployment.invoke_url}/uri 600"
+  }  
 }
 
 output "api_url" {
