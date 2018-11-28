@@ -3,41 +3,42 @@ variable "api" {
 }
 
 variable "parent" {
-  description = "Identifier of the parent resource from which the method will hang." 
+  description = "Identifier of the parent resource from which the method will hang."
 }
 
 variable "request" {
   description = <<EOF
 Request information. The following arguments are supported:
-  - type: integration input's type (AWS, MOCK) (required)
+  - type: integration input's type (AWS, HTTP, MOCK) (required)
   - uri: input's URI (required if type is AWS)
   - content_type: content type of the request template (default: application/json)
   - template: request template
 EOF
+
   type = "map"
 }
 
 variable "querystrings" {
   description = "Map containing the query strings (name => required)"
-  type = "map"
-  default = {}
+  type        = "map"
+  default     = {}
 }
 
 variable "passthrough_behavior" {
   description = "The integration passthrough behavior (WHEN_NO_MATCH, WHEN_NO_TEMPLATES, NEVER)."
-  default = "WHEN_NO_MATCH"
+  default     = "WHEN_NO_MATCH"
 }
 
 variable "headers" {
   description = "Map containing the headers (name => value)"
-  type = "map"
-  default = {}
+  type        = "map"
+  default     = {}
 }
 
 variable "cache_key_parameters" {
   description = "List containing the cache key parameters"
-  type = "list"
-  default = []
+  type        = "list"
+  default     = []
 }
 
 variable "responses" {
@@ -50,5 +51,6 @@ The following arguments are supported to describe an individual response:
   - content_type: content type of the response template (default: application/json)
   - template: response template
 EOF
+
   type = "map"
 }
