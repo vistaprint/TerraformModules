@@ -71,6 +71,10 @@ module "deployment" {
       metrics_enabled = true
     }
   ]
+
+  tags = {
+    Name = "TerraformModules"
+  }
 }
 
 resource "null_resource" "wait_for_deployment" {

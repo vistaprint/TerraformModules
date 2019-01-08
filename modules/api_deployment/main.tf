@@ -21,6 +21,8 @@ resource "aws_api_gateway_stage" "stages" {
       ? lookup(var.stages[count.index], "cache_cluster_size", "0.5")
       : ""
     }"
+
+  tags = "${var.tags}"
 }
 
 resource "aws_api_gateway_method_settings" "method_settings" {
