@@ -36,3 +36,11 @@ List of additional stages. Each stage supports the following arguments:
   - logging_level: specifies the logging level for this method. The available levels are OFF, ERROR, and INFO.
 EOF
 }
+
+variable "tags" {
+  type = "map"
+  default = {}
+  description = <<EOF
+Tags to use for the additional stages (tags are not supported for the default stage).
+EOF
+}

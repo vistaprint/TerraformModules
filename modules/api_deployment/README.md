@@ -33,6 +33,10 @@ module "sample_deployment" {
       metrics_enabled = true
     }
   ]
+
+  tags = {
+    Name = "TerraformModules"
+  }
 }
 ```
 
