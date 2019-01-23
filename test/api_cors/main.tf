@@ -51,3 +51,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 output "api_url" {
   value = "${aws_api_gateway_deployment.deployment.invoke_url}"
 }
+
+# Added to test dependency linkage
+output "depends_id" {
+  value = "${module.options.depends_id}"
+}
