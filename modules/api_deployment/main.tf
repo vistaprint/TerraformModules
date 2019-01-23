@@ -23,6 +23,10 @@ resource "aws_api_gateway_stage" "stages" {
     }"
 
   tags = "${var.tags}"
+
+  variables = {
+    depends_id = "${md5("${join("", var.depends_id)}")}"
+  }
 }
 
 resource "aws_api_gateway_method_settings" "method_settings" {
