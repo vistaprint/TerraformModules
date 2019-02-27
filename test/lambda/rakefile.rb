@@ -53,6 +53,10 @@ namespace 'lambda' do
       )
       lambda_config.memory_size
     end
+
+    def self.match_names(actual, expected)
+      expect(actual).to eq(expected)
+    end
   end
 
   task :prepare, [:prefix] do
@@ -62,6 +66,17 @@ namespace 'lambda' do
   end
 
   task :validate, [:prefix] do |_, args|
+    lambda_names = TDK::TerraformLogFilter.filter(
+      TDK::Command.run('terraform output lambda_names'))
+
+    LambdaShould.match_names(
+      lambda_names,
+      [
+        "LambdaTestHello = #{args.prefix}LambdaTestHello",
+        "LambdaTestPrintVars = #{args.prefix}LambdaTestPrintVars"
+      ]
+    )
+
     api_url = TDK::TerraformLogFilter.filter(
       TDK::Command.run('terraform output api_url'))[0]
 

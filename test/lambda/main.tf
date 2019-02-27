@@ -222,3 +222,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 output "api_url" {
   value = "${aws_api_gateway_deployment.deployment.invoke_url}"
 }
+
+# This is just to test that the lambda_names output is created as expected.
+output "lambda_names" {
+  value = "${module.lambdas.lambda_names}"
+}
