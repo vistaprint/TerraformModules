@@ -1,4 +1,5 @@
 require 'aws-sdk'
+require 'json'
 require 'rspec'
 require 'zip'
 
@@ -67,14 +68,14 @@ namespace 'lambda' do
 
   task :validate, [:prefix] do |_, args|
     lambda_names = TDK::TerraformLogFilter.filter(
-      TDK::Command.run('terraform output lambda_names'))
+      TDK::Command.run('terraform output -json lambda_names'))[0]
 
     LambdaShould.match_names(
       lambda_names,
-      [
-        "LambdaTestHello = #{args.prefix}LambdaTestHello",
-        "LambdaTestPrintVars = #{args.prefix}LambdaTestPrintVars"
-      ]
+      JSON.generate({
+        "LambdaTestHello": "#{args.prefix}LambdaTestHello",
+        "LambdaTestPrintVars": "#{args.prefix}LambdaTestPrintVars"
+      })
     )
 
     api_url = TDK::TerraformLogFilter.filter(

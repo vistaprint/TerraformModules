@@ -3,6 +3,6 @@
 # formatlist(value, another_list), but for some reason the contents of the list appear
 # in the resulting strings (note there is no %s in the format string).
 data "template_file" "list" {
-  count = "${var.count}"
-  template = "${var.value}"
+  count = var.elem_count
+  template = var.value
 }
