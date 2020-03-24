@@ -18,7 +18,7 @@ resource "aws_api_gateway_method" "method" {
   # The merging order matters as a query string that is also a cache key
   # parameter should not have its value unconditionally set to true,
   # but to the value provided by the user.
-  request_parameters = "${merge(
+  request_parameters = merge(
     zipmap(
       formatlist("method.request.%s", var.cache_key_parameters),
       module.cache_key_parameters_values.list
@@ -27,7 +27,7 @@ resource "aws_api_gateway_method" "method" {
       formatlist("method.request.querystring.%s", keys(var.querystrings)),
       values(var.querystrings)
     )
-  )}"
+  )
 
   request_validator_id = "${aws_api_gateway_request_validator.validator.id}"
 }
@@ -47,7 +47,7 @@ resource "aws_api_gateway_integration" "mock_integration" {
   resource_id          = "${var.parent}"
   http_method          = "${aws_api_gateway_method.method.http_method}"
   type                 = "MOCK"
-  cache_key_parameters = ["${formatlist("method.request.%s", var.cache_key_parameters)}"]
+  cache_key_parameters = formatlist("method.request.%s", var.cache_key_parameters)
 
   request_templates = "${map(
       lookup(var.request, "content_type", local.default_content_type),
@@ -66,7 +66,7 @@ resource "aws_api_gateway_integration" "integration" {
   type                    = "${var.request["type"]}"
   uri                     = "${contains(list("AWS", "HTTP"), var.request["type"]) ? lookup(var.request, "uri", "") : ""}"
   integration_http_method = "POST"
-  cache_key_parameters    = ["${formatlist("method.request.%s", var.cache_key_parameters)}"]
+  cache_key_parameters    = formatlist("method.request.%s", var.cache_key_parameters)
 
   request_templates = "${map(
       lookup(var.request, "content_type", local.default_content_type),
@@ -129,12 +129,12 @@ resource "aws_api_gateway_integration_response" "integration_responses" {
 
 module "response_headers_values" {
   source = "../n_list"
-  count  = "${length(var.headers)}"
+  elem_count  = length(var.headers)
   value  = "true"
 }
 
 module "cache_key_parameters_values" {
   source = "../n_list"
-  count  = "${length(var.cache_key_parameters)}"
+  elem_count  = length(var.cache_key_parameters)
   value  = "true"
 }

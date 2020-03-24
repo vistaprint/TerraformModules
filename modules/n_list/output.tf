@@ -1,3 +1,3 @@
 output "list" {
-  value = ["${data.template_file.list.*.rendered}"]
+  value = data.template_file.list.*.rendered
 }

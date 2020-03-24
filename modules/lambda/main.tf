@@ -44,7 +44,7 @@ resource "aws_lambda_function" "lambda_function" {
   function_name    = "${format("%s%s", var.prefix, element(keys(var.functions), count.index))}"
   role             = "${var.create_role ? join("", aws_iam_role.iam_for_lambda.*.arn) : var.role_arn}"
   handler          = "${lookup(var.functions[element(keys(var.functions), count.index)], "handler")}"
-  source_code_hash = "${base64sha256(file("${var.lambda_file}"))}"
+  source_code_hash = filebase64sha256(var.lambda_file)
   runtime          = "${var.runtime}"
   timeout          = "${var.timeout}"
   tags             = "${var.tags}"

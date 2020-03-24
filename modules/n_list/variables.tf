@@ -1,5 +1,6 @@
-variable "count" {
+variable "elem_count" {
   description = "List length"
+  type = number
 }
 
 variable "value" {
