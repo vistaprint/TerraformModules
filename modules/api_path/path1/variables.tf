@@ -8,5 +8,5 @@ variable "parent" {
 
 variable "path" {
   description = "Path resource names (path1)"
-  type = "list"
+  type        = list(string)
 }

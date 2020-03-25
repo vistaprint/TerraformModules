@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "${var.profile}"
-  region  = "${var.region}"
+  profile = var.profile
+  region  = var.region
 }
 
 data "aws_caller_identity" "current" {}
@@ -14,8 +14,8 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   request = {
     type = "AWS"
     uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambdas.lambda_arns["ApiDeploymentTestLambda"]}/invocations"
@@ -40,7 +40,6 @@ module "lambdas" {
   lambda_file = "lambda.zip"
   functions = { ApiDeploymentTestLambda = { handler = "lambda.handler" }}
 
-  permission_count = 1
   permissions = [
     {
       principal    = "apigateway.amazonaws.com"
@@ -49,7 +48,7 @@ module "lambdas" {
     }
   ]
 
-  prefix = "${var.prefix}"
+  prefix = var.prefix
   runtime = "python3.6"
 }
 
@@ -57,8 +56,8 @@ module "lambdas" {
 
 module "deployment" {
   source = "../../modules/api_deployment"
-  api = "${aws_api_gateway_rest_api.api.id}"
-  depends_id = ["${module.method.depends_id}"]
+  api = aws_api_gateway_rest_api.api.id
+  depends_id = [module.method.depends_id]
   default_stage = {
     name = "Default"
     description = "Default stage"
@@ -90,9 +89,9 @@ resource "null_resource" "wait_for_deployment" {
 }
 
 output "stage_name" {
-  value = "${module.deployment.stage_name}"
+  value = module.deployment.stage_name
 }
 
 output "api_url" {
-  value = "${module.deployment.api_url}"
+  value = module.deployment.api_url
 }

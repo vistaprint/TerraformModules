@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "${var.profile}"
-  region  = "${var.region}"
+  profile = var.profile
+  region  = var.region
 }
 
 ### API ###
@@ -11,8 +11,8 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -31,14 +31,14 @@ EOF
 
 module "gateway_responses" {
   source = "../../modules/api_gateway_responses"
-  api    = "${aws_api_gateway_rest_api.api.id}"
+  api    = aws_api_gateway_rest_api.api.id
 }
 
 ### Deployment ###
 
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = ["module.method", "module.gateway_responses"]
-  rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+  rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "Test"
 
   provisioner "local-exec" {
@@ -47,5 +47,5 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 output "api_url" {
-  value = "${aws_api_gateway_deployment.deployment.invoke_url}"
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }

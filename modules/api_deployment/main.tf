@@ -2,7 +2,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id       = var.api
   description       = var.description
   stage_name        = var.default_stage["name"]
-  stage_description = "${var.default_stage["description"]}"
+  stage_description = var.default_stage["description"]
   variables = {
     depends_id = md5(join("", var.depends_id))
   }

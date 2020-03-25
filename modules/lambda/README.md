@@ -23,7 +23,6 @@ module "lambda" {
 
   memory_size  = "256"
 
-  permission_count = 1
   permissions = [
     {
       principal    = "apigateway.amazonaws.com"
@@ -32,7 +31,7 @@ module "lambda" {
     }
   ]
 
-  policy       = "${data.template_file.example_policy.rendered}"
+  policy       = data.template_file.example_policy.rendered
   prefix       = "MyLambdas"
   runtime      = "python3.6"
 }
@@ -68,10 +67,10 @@ To use the template in `main.tf` specify a data resource like so:
 
 ```hcl
 data "template_file" "example_policy" {
-  template = "${file("templates/example_policy.tpl")}"
+  template = file("templates/example_policy.tpl")
   vars {
-    region    = "${var.region}"
-    accountId = "${var.accountId}"
+    region    = var.region
+    accountId = var.accountId
   }
 }
 ```

@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "${var.profile}"
-  region  = "${var.region}"
+  profile = var.profile
+  region  = var.region
 }
 
 data "aws_caller_identity" "current" {}
@@ -14,29 +14,29 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "hello_endpoint" {
   source = "../../modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["hello", "{name}"]
 }
 
 module "hello_endpoint_external_role" {
   source = "../../modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["hello-external-role", "{name}"]
 }
 
 module "printvars_endpoint" {
   source = "../../modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["printvar", "{name}"]
 }
 
 module "hello_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.hello_endpoint.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.hello_endpoint.path_resource_id, 1)
 
   request = {
     type = "AWS"
@@ -60,8 +60,8 @@ EOF
 
 module "hello_method_external_role" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.hello_endpoint_external_role.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.hello_endpoint_external_role.path_resource_id, 1)
 
   request = {
     type = "AWS"
@@ -85,8 +85,8 @@ EOF
 
 module "printvars_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.printvars_endpoint.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.printvars_endpoint.path_resource_id, 1)
 
   request = {
     type = "AWS"
@@ -132,8 +132,6 @@ module "lambdas" {
 
   memory_size = "256"
 
-  permission_count = 1
-
   permissions = [
     {
       principal    = "apigateway.amazonaws.com"
@@ -142,7 +140,7 @@ module "lambdas" {
     },
   ]
 
-  prefix  = "${var.prefix}"
+  prefix  = var.prefix
   runtime = "python3.6"
 }
 
@@ -178,9 +176,7 @@ module "lambdas_with_external_role" {
   }
 
   create_role = false
-  role_arn    = "${aws_iam_role.common_iam_for_lambda.arn}"
-
-  permission_count = 1
+  role_arn    = aws_iam_role.common_iam_for_lambda.arn
 
   permissions = [
     {
@@ -190,7 +186,7 @@ module "lambdas_with_external_role" {
     },
   ]
 
-  prefix  = "${var.prefix}"
+  prefix  = var.prefix
   runtime = "python3.6"
 }
 
@@ -203,7 +199,7 @@ resource "aws_api_gateway_deployment" "deployment" {
     "module.printvars_method",
   ]
 
-  rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+  rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "Prod"
 
   provisioner "local-exec" {
@@ -220,10 +216,10 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 output "api_url" {
-  value = "${aws_api_gateway_deployment.deployment.invoke_url}"
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }
 
 # This is just to test that the lambda_names output is created as expected.
 output "lambda_names" {
-  value = "${module.lambdas.lambda_names}"
+  value = module.lambdas.lambda_names
 }

@@ -13,7 +13,7 @@ module "path" {
 
 module "method" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
-  parent = "${element(module.path.path_resource_id, 1)}"
+  parent = element(module.path.path_resource_id, 1)
   # ...
 }
 ```
@@ -40,15 +40,15 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "path" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["hello", "{name}"]
 }
 
 module "method" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.path.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.path.path_resource_id, 1)
   request = {
     type = "AWS"
     uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${var.lambda}/invocations" 

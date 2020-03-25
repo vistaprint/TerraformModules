@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "${var.profile}"
-  region  = "${var.region}"
+  profile = var.profile
+  region  = var.region
 }
 
 ### API ###
@@ -13,8 +13,8 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -44,15 +44,15 @@ EOF
 
 module "path" {
   source = "../../modules/api_path/path1"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["redirect"]
 }
 
 module "redirect_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.path.path_resource_id, 0)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.path.path_resource_id, 0)
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -72,15 +72,15 @@ EOF
 
 module "param" {
   source = "../../modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["caching", "{param}"]
 }
 
 module "caching_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.param.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.param.path_resource_id, 1)
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -111,15 +111,15 @@ EOF
 
 module "passthrough" {
   source = "../../modules/api_path/path1"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["passthrough"]
 }
 
 module "passthrough_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.passthrough.path_resource_id, 0)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.passthrough.path_resource_id, 0)
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -141,15 +141,15 @@ EOF
 
 module "uri" {
   source = "../../modules/api_path/path1"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["uri"]
 }
 
 module "uri_method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.uri.path_resource_id, 0)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.uri.path_resource_id, 0)
   request = {
     type = "HTTP"
     uri = "http://httpstat.us/200"
@@ -172,7 +172,7 @@ module "uri_method" {
 
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = ["module.method", "module.redirect_method", "module.caching_method", "module.passthrough", "module.uri"]
-  rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+  rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "Test"
 
   provisioner "local-exec" {
@@ -197,5 +197,5 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 output "api_url" {
-  value = "${aws_api_gateway_deployment.deployment.invoke_url}"
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }

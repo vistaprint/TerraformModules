@@ -1,4 +1,3 @@
-
 variable "api_name" {
   description = "The name of the API to attach the alarms to."
 }
@@ -8,8 +7,8 @@ variable "stage_name" {
 }
 
 variable "alarms" {
-  type = "map"
-  default = {}
+  type        = "map"
+  default     = {}
   description = <<EOF
 Alarms information. The keys of the map are the metric names. The values
 of the map contain the information for a metric alarm.
@@ -27,9 +26,6 @@ The following arguments are supported:
   - actions: The actions to execute when the alarm transitions into an ALARM state.
       Due to a limitation in Terraform, this list must be given as a comma-separated string.
 EOF
+
 }
 
-# TODO: remove once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
-variable "alarm_count" {
-  default = 0
-}

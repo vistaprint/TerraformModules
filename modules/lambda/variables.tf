@@ -11,12 +11,6 @@ EOF
   type = "map"
 }
 
-# TODO: remove once https://github.com/hashicorp/terraform/issues/15471 gets fixed.
-variable "permission_count" {
-  description = "Number of permissions to attach to the lambda."
-  default = 0
-}
-
 variable "permissions" {
   description = <<EOF
 A list of maps with the settings for each permission. The required settings are:

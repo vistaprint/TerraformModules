@@ -16,8 +16,8 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "method" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   request = {
     type = "MOCK"
     content_type = "application/json"
@@ -37,7 +37,7 @@ EOF
 
 module "options" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_cors"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
 }
 ```

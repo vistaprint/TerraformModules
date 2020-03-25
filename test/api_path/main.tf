@@ -1,6 +1,6 @@
 provider "aws" {
-  profile    = "${var.profile}"
-  region     = "${var.region}"
+  profile    = var.profile
+  region     = var.region
 }
 
 data "aws_caller_identity" "current" {}
@@ -14,15 +14,15 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "path" {
   source = "../../modules/api_path/path2"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   path   = ["hello", "{name}"]
 }
 
 module "method" {
   source = "../../modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${element(module.path.path_resource_id, 1)}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = element(module.path.path_resource_id, 1)
   request = {
     type = "AWS"
     uri  = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${module.lambda.lambda_arns["LambdaModuleTest1"]}/invocations" 
@@ -48,7 +48,6 @@ module "lambda" {
   lambda_file  = "sample_lambda.zip"
   functions    = {LambdaModuleTest1 = { handler = "hello.say_hello" }}
 
-  permission_count = 1
   permissions = [
     {
       principal    = "apigateway.amazonaws.com"
@@ -57,7 +56,7 @@ module "lambda" {
     }
   ]
   
-  prefix       = "${var.prefix}"
+  prefix       = var.prefix
   runtime      = "python3.6"
 }
 
@@ -66,7 +65,7 @@ module "lambda" {
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = ["module.method"]
 
-  rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+  rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "Prod"
 
   provisioner "local-exec" {
@@ -76,9 +75,9 @@ resource "aws_api_gateway_deployment" "deployment" {
 
 
 output "api_path_parts" {
-  value = "${module.path.path_part}"
+  value = module.path.path_part
 }
 
 output "api_url" {
-  value = "${aws_api_gateway_deployment.deployment.invoke_url}"
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }

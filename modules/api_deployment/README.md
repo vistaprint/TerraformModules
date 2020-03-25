@@ -11,15 +11,15 @@ resource "aws_api_gateway_rest_api" "api" {
 
 module "sample_method" {
   source = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_method"
-  api    = "${aws_api_gateway_rest_api.api.id}"
-  parent = "${aws_api_gateway_rest_api.api.root_resource_id}"
+  api    = aws_api_gateway_rest_api.api.id
+  parent = aws_api_gateway_rest_api.api.root_resource_id
   # ...
 }
 
 module "sample_deployment" {
   source     = "git::https://github.com/vistaprint/terraformmodules.git//modules/api_deployment"
-  api        = "${aws_api_gateway_rest_api.api.id}"
-  depends_id = ["${module.method.depends_id}"]
+  api        = aws_api_gateway_rest_api.api.id
+  depends_id = [module.method.depends_id]
   
   default_stage = {
     name = "Default"

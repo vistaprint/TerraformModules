@@ -3,5 +3,6 @@ variable "api" {
 }
 
 variable "parent" {
-  description = "Identifier of the parent resource from which the method will hang." 
+  description = "Identifier of the parent resource from which the method will hang."
 }
+
